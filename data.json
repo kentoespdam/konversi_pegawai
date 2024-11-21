@@ -1,0 +1,53 @@
+[
+    {
+        "id": null,
+        "nik": "3302271511640001",
+        "nama": "AGUS SUBALI, S.E.,M.Si., Ak.,CA.",
+        "jenisKelamin": "LAKI_LAKI",
+        "tempatLahir": "Sukoharjo",
+        "tanggalLahir": "1964-11-15T00:00:00.000",
+        "alamat": "Jl. Galunggung No.16 Rt.005\/006 Pabuaran, Pwt. Utara ",
+        "telp": "0811254444",
+        "agama": "ISLAM",
+        "ibuKandung": "Ibu WAGINAH",
+        "golonganDarah": null,
+        "statusKawin": "KAWIN",
+        "pendidikanTerakhirId": 5,
+        "notes": "",
+        "isPegawai": 0
+    },
+    {
+        "id": null,
+        "nik": "3302270907690002",
+        "nama": "CHARIS SETIYABUDI, S.E.",
+        "jenisKelamin": "LAKI_LAKI",
+        "tempatLahir": "Banyumas",
+        "tanggalLahir": "1969-07-09T00:00:00.000",
+        "alamat": "Jl. Kenanga Gg.10 Rt.003\/002 Sumampir, Purwokerto Utara",
+        "telp": "",
+        "agama": "ISLAM",
+        "ibuKandung": "",
+        "golonganDarah": null,
+        "statusKawin": "KAWIN",
+        "pendidikanTerakhirId": 5,
+        "notes": "",
+        "isPegawai": 0
+    },
+    {
+        "id": null,
+        "nik": "3302241001710001",
+        "nama": "WACHJONO, S.E.,Ak.,CA.",
+        "jenisKelamin": "LAKI_LAKI",
+        "tempatLahir": "Cilacap",
+        "tanggalLahir": "1971-01-10T00:00:00.000",
+        "alamat": "Jl. Kamper II No.20 Rt.004\/008 Tanjung, Purwokerto Selatan",
+        "telp": "081328239220",
+        "agama": "ISLAM",
+        "ibuKandung": "Watem",
+        "golonganDarah": null,
+        "statusKawin": "KAWIN",
+        "pendidikanTerakhirId": 5,
+        "notes": "",
+        "isPegawai": 0
+    }
+]
