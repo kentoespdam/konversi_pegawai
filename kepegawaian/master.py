@@ -1,5 +1,4 @@
 import pandas as pd
-from core import koneksi
 from core.koneksi import engine_kepegawaian
 from icecream import ic
 

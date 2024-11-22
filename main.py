@@ -1,7 +1,6 @@
 import concurrent
 import time
 from smartoffice.pegawai import ambil_pegawai_dari_smartoffice
-from pandas import DataFrame
 from icecream import ic
 
 from core.post_data import kirim_pegawai

@@ -2,7 +2,7 @@ import pandas as pd
 from pandas import DataFrame
 from core.kamus import replace_status_kerja, replace_status_pegawai
 from core.koneksi import engine
-import swifter
+import swifter  # noqa: F401
 
 from kepegawaian.master import find_golongan_id, find_jabatan_id, find_organisasi_id
 
