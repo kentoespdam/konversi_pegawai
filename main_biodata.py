@@ -1,6 +1,6 @@
-import kamus
-from biodata import ambil_biodata_dari_smartoffice
-from post_data import kirim_biodata
+import core.kamus as kamus
+from smartoffice.biodata import ambil_biodata_dari_smartoffice
+from core.post_data import kirim_biodata
 import concurrent.futures
 from icecream import ic
 import sys

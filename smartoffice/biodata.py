@@ -1,5 +1,5 @@
 import pandas as pd
-from koneksi import koneksi, engine
+from core.koneksi import koneksi, engine
 from icecream import ic
 
 sql_last_edu="""

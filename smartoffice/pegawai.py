@@ -1,11 +1,10 @@
-from concurrent.futures import ThreadPoolExecutor
-import concurrent
-from typing import Generator
 import pandas as pd
-from kamus import replace_status_kerja, replace_status_pegawai
+from pandas import DataFrame
+from core.kamus import replace_status_kerja, replace_status_pegawai
+from core.koneksi import engine
+import swifter
+
 from kepegawaian.master import find_golongan_id, find_jabatan_id, find_organisasi_id
-from koneksi import engine
-from icecream import ic
 
 sql_edu = """
     SELECT
@@ -76,34 +75,41 @@ sql = f"""
     
 """
 
+# def manipulate_jenis_kelamin()
+
+
+def manipulate_pegawai(frame: DataFrame) -> DataFrame:
+    frame["jenisKelamin"].swifter.apply(
+        lambda x: "LAKI_LAKI" if x == "Pria" else "PEREMPUAN"
+    )
+
+    return frame
+
 
 def ambil_pegawai_dari_smartoffice():
     try:
         result = pd.read_sql_query(sql, engine.connect(), params=(6,))
-        result["jenisKelamin"] = result["jenisKelamin"].apply(
+        result["jenisKelamin"] = result["jenisKelamin"].swifter.apply(
             lambda x: "LAKI_LAKI" if x == "Pria" else "PEREMPUAN"
         )
-        result["statusPegawai"] = result["statusPegawai"].apply(
-            lambda x: replace_status_pegawai(x))
-        result["statusKerja"] = result["statusKerja"].apply(
-            lambda x: replace_status_kerja(x))
-        result["ibuKandung"] = result["ibuKandung"].apply(
-            lambda x: x if x else "Ibu")
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            generator: Generator = executor.map(find_golongan_id, result["golonganId"])
-            try:
-                result["golonganId"] = list(generator)
-            except Exception as e:
-                ic(e)
-
-            # result["golonganId"] = result.apply(lambda x: pd.Series(executor.submit(
-            #     find_golongan_id, x["golonganId"]).result()), axis=1)
-        # result["jabatanId"] = result["jabatanId"].apply(
-        #     lambda x: find_jabatan_id(x))
-        # result["organisasiId"] = result["organisasiId"].apply(
-        #     lambda x: find_organisasi_id(x))
-        # result["golonganId"] = result["golonganId"].apply(
-        #     lambda x: find_golongan_id(x) if x else 1)
+        result["statusPegawai"] = result["statusPegawai"].swifter.apply(
+            lambda x: replace_status_pegawai(x)
+        )
+        result["statusKerja"] = result["statusKerja"].swifter.apply(
+            lambda x: replace_status_kerja(x)
+        )
+        result["ibuKandung"] = result["ibuKandung"].swifter.apply(
+            lambda x: x if x else "Ibu"
+        )
+        result["golonganId"] = result["golonganId"].swifter.apply(
+            lambda x: find_golongan_id(x) if x else 0
+        )
+        result["jabatanId"] = result["jabatanId"].swifter.apply(
+            lambda x: find_jabatan_id(x) if x else 0
+        )
+        result["organisasiId"] = result["organisasiId"].swifter.apply(
+            lambda x: find_organisasi_id(x)
+        )
         return result
     except Exception as e:
-        ic(e)
+        print(f"Error: {e}")
