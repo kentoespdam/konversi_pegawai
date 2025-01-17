@@ -31,12 +31,13 @@ def kirim_pegawai(data: pd.DataFrame):
         "nomorSk": data["nomorSk"],
         "tanggalSk": data["tanggalSk"],
         "tmtBerlakuSk": data["tmtBerlakuSk"],
+        "kodePajakId": data["kodePajakId"],
         "gajiPokok": data["gajiPokok"],
     }
     # json_data = json.dumps(dict_data)
     url = f"{baseUrl}/pegawai"
     req = requests.post(url, json=dict_data, headers={
                         "Content-Type": "application/json"})
-    ic(req.status_code, req.json())
+    # ic(req.status_code, req.json())
     if req.status_code != 201:
         ic(data["nipam"], req.text, req.json())

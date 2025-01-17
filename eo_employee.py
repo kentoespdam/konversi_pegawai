@@ -63,6 +63,7 @@ def fetch_data_for_pegawai() -> list:
                 emp.sk_pengangkatan AS nomorSk,
                 emp_sk.tgl_sk AS tanggalSk,
                 emp_sk.tmt_sk AS tmtBerlakuSk,
+                sni.id AS kodePajakId,
                 emp.emp_gp AS gajiPokok
             FROM
                 employee AS emp
@@ -76,6 +77,7 @@ def fetch_data_for_pegawai() -> list:
                 INNER JOIN golongan AS gol ON emp.emp_gol_id = gol.id
                 LEFT JOIN emp_sk ON emp.emp_id = emp_sk.emp_id 
                     AND emp.sk_pengangkatan = emp_sk.no_sk 
+                INNER JOIN salary_non_taxable_income AS sni ON ep.emp_tax_code = sni.code
             WHERE
                 emp.emp_work_status = %s 
             ORDER BY
