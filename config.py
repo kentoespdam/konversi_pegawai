@@ -11,7 +11,7 @@ DEFAULT_EO_DB_CONFIG = {
     "user": os.getenv("DB_USER"),
     "password": os.getenv("DB_PASS"),
     "database": "smartoffice",
-    "charset": "utf8mb4",
+    # "charset": "utf-8",
     "cursorclass": pymysql.cursors.DictCursor,
 }
 
@@ -34,7 +34,7 @@ DEFAULT_KEPEGAWAIAN_DB_CONFIG = {
     "user": os.getenv("DB_USER"),
     "password": os.getenv("DB_PASS"),
     "database": "kepegawaian_migrasi",
-    "charset": "utf8mb4",
+    # "charset": "utf-8",
     "cursorclass": pymysql.cursors.DictCursor,
 }
 

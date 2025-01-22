@@ -1,13 +1,14 @@
-import json
 import pandas as pd
 from icecream import ic
 import requests
+import os
+from dotenv import load_dotenv
 
-baseUrl = "http://localhost:8080"
+load_dotenv()
 
 
 def kirim_pegawai(data: pd.DataFrame):
-    dict_data = {
+    payload = {
         "nik": data["nik"],
         "nama": data["nama"],
         "jenisKelamin": data["jenisKelamin"],
@@ -17,27 +18,35 @@ def kirim_pegawai(data: pd.DataFrame):
         "telp": data["telp"],
         "agama": data["agama"],
         "ibuKandung": data["ibuKandung"],
-        "pendidikanTerakhirId": data["pendidikanTerakhirId"],
+        "pendidikanTerakhirId": data["pendidikanTerakhirId"] if data["pendidikanTerakhirId"] > 0 else None,
         "statusKawin": data["statusKawin"],
         "notes": data["notes"],
         "nipam": data["nipam"],
         "statusPegawai": data["statusPegawai"],
-        "statusKerja": data["statusKerja"],
-        "jabatanId": data["jabatanId"],
         "organisasiId": data["organisasiId"],
-        "profesiId": data["profesiId"],
-        "golonganId": data["golonganId"],
-        "gradeId": data["gradeId"],
+        "jabatanId": data["jabatanId"],
+        "statusKerja": data["statusKerja"],
         "nomorSk": data["nomorSk"],
         "tanggalSk": data["tanggalSk"],
         "tmtBerlakuSk": data["tmtBerlakuSk"],
-        "kodePajakId": data["kodePajakId"],
         "gajiPokok": data["gajiPokok"],
     }
-    # json_data = json.dumps(dict_data)
-    url = f"{baseUrl}/pegawai"
-    req = requests.post(url, json=dict_data, headers={
-                        "Content-Type": "application/json"})
-    # ic(req.status_code, req.json())
-    if req.status_code != 201:
-        ic(data["nipam"], req.text, req.json())
+
+    if data["profesiId"] > 0:
+        payload["profesiId"] = data["profesiId"]
+    if data["golonganId"] > 0:
+        payload["golonganId"] = data["golonganId"]
+    if data["kodePajakId"] > 0:
+        payload["kodePajakId"] = data["kodePajakId"]
+    if data["tmtKontrakSelesai"] is not pd.NA:
+        payload["tmtKontrakSelesai"] = data["tmtKontrakSelesai"]
+
+    try:
+        url = f"{os.getenv("API_URL")}/pegawai"
+        req = requests.post(url, json=payload, headers={
+                            "Content-Type": "application/json"})
+        if req.status_code != 201:
+            ic(data.to_dict(), payload, req.text)
+
+    except Exception as e:
+        ic("error posting: ", payload)
