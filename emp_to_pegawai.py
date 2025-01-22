@@ -5,16 +5,16 @@ import concurrent
 from icecream import ic
 
 
-from eo_employee import fetch_data_for_pegawai
-from kepeg_golongan import fetch_golongan_id
-from kepeg_jabatan import fetch_jabatan_id
-from kepeg_jenjang_pendidikan import fetch_jenjang_pendidikan_id
 import pandas as pd
 import dask.dataframe as dd
 
-from kepeg_organisasi import fetch_organisasi_id
-from kepeg_profesi import fetch_profesi_id_by_jabatan_id
-from post_data import kirim_pegawai
+from core.kepegawaian.kepeg_golongan import fetch_golongan_id
+from core.kepegawaian.kepeg_jabatan import fetch_jabatan_id
+from core.kepegawaian.kepeg_jenjang_pendidikan import fetch_jenjang_pendidikan_id
+from core.kepegawaian.kepeg_organisasi import fetch_organisasi_id
+from core.kepegawaian.kepeg_profesi import fetch_profesi_id_by_jabatan_id
+from core.post_data import kirim_pegawai
+from core.smartoffice.eo_employee import fetch_data_for_pegawai
 
 
 def validate_pegawai(pegawai_list: pd.DataFrame):

@@ -1,6 +1,5 @@
 import pymysql
 from config import DEFAULT_KEPEGAWAIAN_DB_CONFIG
-from icecream import ic
 
 
 def fetch_golongan_id(golongan_name: str) -> int:

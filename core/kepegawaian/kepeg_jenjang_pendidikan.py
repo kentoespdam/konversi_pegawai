@@ -1,4 +1,3 @@
-from unittest import result
 import pymysql
 from config import DEFAULT_KEPEGAWAIAN_DB_CONFIG
 

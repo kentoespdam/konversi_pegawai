@@ -1,6 +1,5 @@
 from config import get_smartoffice_connection_pool
-from enums import EmpWorkStatus
-
+from core.enums import EmpWorkStatus
 
 def fetch_data_for_pegawai() -> list:
     """Fetch employee data from the database."""
