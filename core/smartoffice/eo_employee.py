@@ -1,6 +1,7 @@
 from config import get_smartoffice_connection_pool
 from core.enums import EmpWorkStatus
 
+
 def fetch_data_for_pegawai() -> list:
     """Fetch employee data from the database."""
     query = """
@@ -95,7 +96,22 @@ def fetch_data_for_pegawai() -> list:
             return cursor.fetchall()
 
 
-def fetch_profil_gaji():
+def fetch_gaji_employee():
     query = """
-            SELECT * FROM employee
+            SELECT
+                emp.emp_sg_id AS gajiProfilId,
+                emp.emp_phdp AS phdp,
+                ep.id_rumdin AS rumahDinasId,
+                emp.emp_code AS nipam
+            FROM 
+                employee AS emp
+                JOIN emp_profile AS ep ON emp.emp_profile_id = ep.emp_profile_id
+            WHERE
+                emp.emp_work_status = %s 
+                AND emp.emp_code != %s
             """
+    params = (EmpWorkStatus.KaryawanAktif.value, "Pengaduan")
+    with get_smartoffice_connection_pool().get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query, params)
+            return cursor.fetchall()
