@@ -10,13 +10,13 @@ DEFAULT_EO_DB_CONFIG = {
     "port": int(os.getenv("DB_PORT")),
     "user": os.getenv("DB_USER"),
     "password": os.getenv("DB_PASS"),
-    "database": "smartoffice",
+    "database": os.getenv("DB_NAME"),
     "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor,
 }
 
 
-def get_smartoffice_connection_pool() -> pymysqlpool.ConnectionPool:
+def get_smartoffice_connection_pool() -> pymysqlpool.Connection:
     """Get a connection pool to the smartoffice database."""
 
     return pymysqlpool.ConnectionPool(
@@ -25,7 +25,7 @@ def get_smartoffice_connection_pool() -> pymysqlpool.ConnectionPool:
         maxsize=10,
         pre_create_num=1,
         **DEFAULT_EO_DB_CONFIG,
-    )
+    ).get_connection()
 
 
 DEFAULT_KEPEGAWAIAN_DB_CONFIG = {
@@ -33,13 +33,13 @@ DEFAULT_KEPEGAWAIAN_DB_CONFIG = {
     "port": int(os.getenv("DB_PORT")),
     "user": os.getenv("DB_USER"),
     "password": os.getenv("DB_PASS"),
-    "database": "kepegawaian",
+    "database": os.getenv("DB_NAME_KEPEGAWAIAN"),
     "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor,
 }
 
 
-def get_kepegawaian_connection_pool(autocommit: bool = False) -> pymysqlpool.ConnectionPool:
+def get_kepegawaian_connection_pool(autocommit: bool = False) -> pymysqlpool.Connection:
     """Get a connection pool to kepegawaian database."""
 
     return pymysqlpool.ConnectionPool(
@@ -49,4 +49,4 @@ def get_kepegawaian_connection_pool(autocommit: bool = False) -> pymysqlpool.Con
         pre_create_num=2,
         autocommit=autocommit,
         **DEFAULT_KEPEGAWAIAN_DB_CONFIG,
-    )
+    ).get_connection()

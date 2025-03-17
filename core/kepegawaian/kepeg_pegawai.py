@@ -19,7 +19,7 @@ def update_pegawai_phdp(salary_rows: list) -> None:
         for row in salary_rows
     ]
     try:
-        with get_kepegawaian_connection_pool(autocommit=True).get_connection() as connection:
+        with get_kepegawaian_connection_pool(autocommit=True) as connection:
             with connection.cursor() as cursor:
                 cursor.executemany(query, data)
                 affected = cursor.rowcount

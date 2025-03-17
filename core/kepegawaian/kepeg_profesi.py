@@ -1,5 +1,23 @@
 import pymysql
-from config import DEFAULT_KEPEGAWAIAN_DB_CONFIG
+from config import DEFAULT_KEPEGAWAIAN_DB_CONFIG, get_kepegawaian_connection_pool
+
+
+def fetch_profesi():
+    query = """
+        SELECT
+            prof.id, 
+            prof.nama, 
+            prof.level_id, 
+            prof.organisasi_id, 
+            prof.jabatan_id, 
+            prof.grade_id
+        FROM
+            profesi AS prof
+            """
+    with get_kepegawaian_connection_pool() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
 
 
 def fetch_profesi_id_by_jabatan_id(jabatan_id: int) -> int:

@@ -90,7 +90,7 @@ def fetch_data_for_pegawai() -> list:
                 emp.emp_id
             """
     params = (EmpWorkStatus.KaryawanAktif.value, "Pengaduan")
-    with get_smartoffice_connection_pool().get_connection() as conn:
+    with get_smartoffice_connection_pool() as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, params)
             return cursor.fetchall()
@@ -111,7 +111,7 @@ def fetch_gaji_employee():
                 AND emp.emp_code != %s
             """
     params = (EmpWorkStatus.KaryawanAktif.value, "Pengaduan")
-    with get_smartoffice_connection_pool().get_connection() as conn:
+    with get_smartoffice_connection_pool() as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, params)
             return cursor.fetchall()

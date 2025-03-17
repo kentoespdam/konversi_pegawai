@@ -1,5 +1,23 @@
 import pymysql
-from config import DEFAULT_KEPEGAWAIAN_DB_CONFIG
+from config import DEFAULT_KEPEGAWAIAN_DB_CONFIG, get_kepegawaian_connection_pool
+
+
+def fetch_jabatan():
+    query = """
+        SELECT
+            jab.id, 
+            jab.kode, 
+            jab.parent_id, 
+            jab.level_id, 
+            jab.nama, 
+            jab.organisasi_id
+        FROM
+            jabatan AS jab
+        """
+    with get_kepegawaian_connection_pool() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
 
 
 def fetch_jabatan_id(jabatan_name: str) -> int:
