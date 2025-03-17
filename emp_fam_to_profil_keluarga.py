@@ -1,11 +1,8 @@
 import concurrent.futures
-import os
 import concurrent
 import time
 import pandas as pd
 from icecream import ic
-import requests
-import swifter
 from core.post_data import do_post
 from core.smartoffice.emp_family import fetch_data_for_profil_keluarga
 from dotenv import load_dotenv
@@ -20,13 +17,11 @@ def main():
     fam_df["tanggalLahir"] = fam_df["tanggalLahir"].apply(
         lambda x: x.strftime('%Y-%m-%d'))
     ic(f"generating data finish in {time.time()-start_time}s")
-    
+
     start_time = time.time()
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         executor.map(post_data, [row for row in fam_df.itertuples()])
     ic(f"posting data finish in {time.time()-start_time}s")
-
-
 
 
 def cleanup(df: pd.DataFrame):
