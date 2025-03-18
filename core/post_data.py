@@ -55,15 +55,16 @@ def kirim_pegawai(data: pd.DataFrame):
 def do_post(path, payload):
     try:
         url = f"{os.getenv('API_URL')}/{path}"
-        req = requests.post(url, json=payload, headers={
-                            "Content-Type": "application/json"})
-        # if req.status_code != 201:
-        #     ic(payload, req.text)
+        req = requests.post(url,
+                            json=payload,
+                            headers={"Content-Type": "application/json"})
+        if req.status_code != 201:
+            raise Exception(req.json())
 
         return req.json()
 
     except Exception as e:
-        ic("error posting: ", payload)
+        ic("error posting: ", e, payload)
         return None
 
 
