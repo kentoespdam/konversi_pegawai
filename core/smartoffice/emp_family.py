@@ -1,4 +1,5 @@
 from config import get_smartoffice_connection_pool
+from core.enums import EmpWorkStatus
 
 
 def fetch_data_for_profil_keluarga(emp_profil_id: int = None):
@@ -38,7 +39,7 @@ def fetch_data_for_profil_keluarga(emp_profil_id: int = None):
             em.emp_work_status = %s 
             AND ef.fam_status = %s
         """
-    params = (6, 1)
+    params = (EmpWorkStatus.KaryawanAktif.value, 1)
     if emp_profil_id is not None:
         query += " AND ef.emp_profile_id = %s"
         params += (emp_profil_id,)

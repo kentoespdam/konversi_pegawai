@@ -1,4 +1,5 @@
 from config import get_smartoffice_connection_pool
+from core.enums import EmpWorkStatus
 
 
 def fetch_data_for_pelatihan(id: int = None):
@@ -22,10 +23,10 @@ def fetch_data_for_pelatihan(id: int = None):
         WHERE
             em.emp_work_status = %s 
         """
-    params = (6)
+    params = (EmpWorkStatus.KaryawanAktif.value)
     if id is not None:
         query += " AND et.id = %s"
-        params = (6, id,)
+        params = (EmpWorkStatus.KaryawanAktif.value, id,)
     with get_smartoffice_connection_pool() as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, params)
