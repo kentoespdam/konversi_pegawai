@@ -26,3 +26,50 @@ def update_pegawai_phdp(salary_rows: list) -> None:
                 icecream.ic(affected, "row(s) affected")
     except Exception as e:
         raise e
+
+
+def fetch_all_pegawai():
+    query = """
+        SELECT
+            pegawai.id, 
+            pegawai.absensi_id, 
+            pegawai.gaji_pokok, 
+            pegawai.is_askes, 
+            pegawai.jml_tanggungan, 
+            pegawai.mkg_bulan, 
+            pegawai.mkg_tahun, 
+            pegawai.nipam, 
+            pegawai.notes, 
+            pegawai.phdp, 
+            pegawai.ref_sk_capeg_id, 
+            pegawai.ref_sk_gol_id, 
+            pegawai.ref_sk_jabatan_id, 
+            pegawai.ref_sk_mutasi_id, 
+            pegawai.ref_sk_pegawai_id, 
+            pegawai.status_kerja, 
+            pegawai.status_pegawai, 
+            pegawai.tmt_golongan, 
+            pegawai.tmt_jabatan, 
+            pegawai.tmt_kerja, 
+            pegawai.tmt_mutasi, 
+            pegawai.tmt_pegawai, 
+            pegawai.tmt_pensiun, 
+            pegawai.nik, 
+            pegawai.gaji_profil_id, 
+            pegawai.golongan_id, 
+            pegawai.grade_id, 
+            pegawai.jabatan_id, 
+            pegawai.gaji_pendapatan_non_pajak_id, 
+            pegawai.organisasi_id, 
+            pegawai.profesi_id, 
+            pegawai.rumah_dinas_id
+        FROM
+            pegawai
+        WHERE 
+            pegawai.is_deleted = FALSE
+        """
+
+    with get_kepegawaian_connection_pool() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()

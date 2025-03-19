@@ -96,6 +96,39 @@ def fetch_data_for_pegawai() -> list:
             return cursor.fetchall()
 
 
+def fetch_data_for_profil_gaji():
+    query = """
+        SELECT
+            em.emp_code AS nipam,
+            em.tgl_pengangkatan AS tmtKerja,
+            em.tmt_pensiun AS tmtPensiun,
+        CASE
+            WHEN em.emp_flag = 1 THEN "PEGAWAI" 
+            WHEN em.emp_flag = 2 THEN "KONTRAK" 
+            WHEN em.emp_flag = 3 THEN "NON_PEGAWAI" 
+            WHEN em.emp_flag = 4 THEN "CAPEG" 
+            WHEN em.emp_flag = 5 THEN "HONORER" 
+            WHEN em.emp_flag = 6 THEN "CALON_HONORER" 
+        END AS statusPegawai,
+            em.emp_gp AS gajiPokok,
+            em.emp_phdp AS phdp,
+            ep.askes_flag AS isAskes,
+            ep.emp_tax_code AS kodePajak,
+            em.emp_sg_id AS gajiProfilId,
+            ep.id_rumdin AS rumahDinasId
+        FROM
+            employee AS em
+            INNER JOIN emp_profile AS ep ON em.emp_profile_id = ep.emp_profile_id 
+        WHERE
+            em.emp_work_status = %s
+        """
+    params=(EmpWorkStatus.KaryawanAktif.value,)
+    with get_smartoffice_connection_pool() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query, params)
+            return cursor.fetchall()
+
+
 def fetch_gaji_employee():
     query = """
             SELECT

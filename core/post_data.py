@@ -73,7 +73,21 @@ def do_put(path: str, payload: dict, id: int | str = None):
         url = f"{os.getenv('API_URL')}/{path}/{id}"
         req = requests.put(url, json=payload, headers={
             "Content-Type": "application/json"})
-        if req.status_code != 200:
+        if req.status_code != 201:
+            ic(payload, req.text)
+        return req.json()
+
+    except Exception as e:
+        ic("error posting: ", payload)
+        return None
+
+
+def do_patch(path: str, payload: dict):
+    try:
+        url = f"{os.getenv('API_URL')}/{path}"
+        req = requests.patch(url, json=payload, headers={
+            "Content-Type": "application/json"})
+        if req.status_code != 201:
             ic(payload, req.text)
         return req.json()
 
