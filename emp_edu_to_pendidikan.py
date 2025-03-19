@@ -18,7 +18,7 @@ def main():
     start_time = time.time()
     result = pd.DataFrame()
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        futures = {executor.submit(post_data, row)                   : row for row in edu_df.itertuples()}
+        futures = {executor.submit(post_data, row): row for row in edu_df.itertuples()}
         for future in concurrent.futures.as_completed(futures):
             try:
                 result = pd.concat([result, pd.DataFrame([future.result()])])
@@ -86,6 +86,7 @@ def accept_data(df: dict):
     }
 
     do_put(f"profil/pendidikan/{id}/accept", payload)
+
 
 if __name__ == "__main__":
     main()
