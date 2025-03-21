@@ -6,6 +6,7 @@ from icecream import ic
 from core.post_data import do_post
 from core.smartoffice.emp_family import fetch_data_for_profil_keluarga
 from dotenv import load_dotenv
+import swifter
 
 load_dotenv()
 
@@ -14,7 +15,7 @@ def main():
     start_time = time.time()
     fam_df = pd.DataFrame(fetch_data_for_profil_keluarga())
     fam_df = cleanup(fam_df)
-    fam_df["tanggalLahir"] = fam_df["tanggalLahir"].apply(
+    fam_df["tanggalLahir"] = fam_df["tanggalLahir"].swifter.apply(
         lambda x: x.strftime('%Y-%m-%d'))
     ic(f"generating data finish in {time.time()-start_time}s")
 
@@ -25,11 +26,11 @@ def main():
 
 
 def cleanup(df: pd.DataFrame):
-    df.loc[:, "tanggungan"] = df["tanggungan"].apply(
+    df.loc[:, "tanggungan"] = df["tanggungan"].swifter.apply(
         lambda x: True if x == 1 else False)
-    df.loc[:, "statusPendidikan"] = df.apply(
+    df.loc[:, "statusPendidikan"] = df.swifter.apply(
         lambda x: cleanup_status_pendidikan(x), axis=1)
-    df.loc[:, "statusKawin"] = df.apply(
+    df.loc[:, "statusKawin"] = df.swifter.apply(
         lambda x: cleanup_status_kawin(x), axis=1)
     return df
 

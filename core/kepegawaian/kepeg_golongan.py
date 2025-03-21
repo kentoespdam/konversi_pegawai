@@ -2,7 +2,7 @@ import pymysql
 from config import DEFAULT_KEPEGAWAIAN_DB_CONFIG, get_kepegawaian_connection_pool
 
 
-def fetch_golongan():
+def fetch_all_golongan():
     query = """
         SELECT
             gol.id, 

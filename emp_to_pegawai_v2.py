@@ -2,7 +2,7 @@ import time
 import concurrent
 import pandas as pd
 import dask.dataframe as dd
-from core.kepegawaian.kepeg_golongan import fetch_golongan
+from core.kepegawaian.kepeg_golongan import fetch_all_golongan
 from core.kepegawaian.kepeg_jabatan import fetch_jabatan
 from core.kepegawaian.kepeg_jenjang_pendidikan import fetch_jenjang_pendidikan
 from core.kepegawaian.kepeg_organisasi import fetch_organisasi
@@ -17,7 +17,7 @@ def main():
     jejang_pendidikan_df = pd.DataFrame(fetch_jenjang_pendidikan())
     organisasi_df = pd.DataFrame(fetch_organisasi())
     jabatan_df = pd.DataFrame(fetch_jabatan())
-    golongan_df = pd.DataFrame(fetch_golongan())
+    golongan_df = pd.DataFrame(fetch_all_golongan())
     profesi_df = pd.DataFrame(fetch_profesi())
 
     raw_pegawai_df["pendidikanTerakhirId"] = 0
