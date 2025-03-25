@@ -29,7 +29,7 @@ def main():
     start_time = time.time()
     raw_pegawai_dd = dd.from_pandas(raw_pegawai_df, npartitions=2)
     pegawai_dd = raw_pegawai_dd.map_partitions(
-        validata_pegawai,
+        validate_pegawai,
         jenjang_pendidikan_df=jejang_pendidikan_df,
         organisasi_df=organisasi_df,
         jabatan_df=jabatan_df,
@@ -46,7 +46,7 @@ def main():
 
 
 
-def validata_pegawai(
+def validate_pegawai(
         pegawai_list: pd.DataFrame,
         jenjang_pendidikan_df: pd.DataFrame,
         organisasi_df: pd.DataFrame,

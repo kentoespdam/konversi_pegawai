@@ -61,8 +61,8 @@ def fetch_data_for_pegawai() -> list:
                 gol.golongan AS golongan,
                 gol.pangkat AS pangkat,
                 IF( emp.emp_flag = 2, empc.contract_no, emp_sk.no_sk ) AS nomorSk,
-                IF( emp.emp_flag = 2, empc.contract_start_date, emp_sk.tgl_sk ) AS tanggalSk,
-                IF( emp.emp_flag = 2, empc.contract_exp_date, emp_sk.tmt_sk ) AS tmtBerlakuSk,
+                IF( emp.emp_flag = 2, skk.tgl_sk, emp_sk.tgl_sk ) AS tanggalSk,
+                IF( emp.emp_flag = 2, empc.contract_start_date, emp_sk.tmt_sk ) AS tmtBerlakuSk,
                 IF( emp.emp_flag = 2, empc.contract_exp_date, NULL ) AS tmtKontrakSelesai,
                 sni.id AS kodePajakId,
                 emp.emp_gp AS gajiPokok 
@@ -70,18 +70,18 @@ def fetch_data_for_pegawai() -> list:
                 employee AS emp
                 INNER JOIN emp_profile AS ep ON emp.emp_profile_id = ep.emp_profile_id
                 LEFT JOIN emp_education AS eed ON ep.emp_profile_id = eed.emp_profile_id 
-                AND eed.edu_last_edu_flag = 1
+                    AND eed.edu_last_edu_flag = 1
                 LEFT JOIN sys_reference AS ref_edu ON eed.edu_level = ref_edu.`value` 
-                AND ref_edu.`code` = 'pendidikan'
+                    AND ref_edu.`code` = 'pendidikan'
                 INNER JOIN position AS pos ON emp.emp_pos_id = pos.pos_id
                 INNER JOIN organization AS org ON pos.pos_org_id = org.org_id
                 LEFT JOIN golongan AS gol ON emp.emp_gol_id = gol.id
                 LEFT JOIN emp_sk ON emp.emp_id = emp_sk.emp_id 
-                AND emp.sk_pengangkatan = emp_sk.no_sk
+                    AND emp.sk_pengangkatan = emp_sk.no_sk
                 INNER JOIN salary_non_taxable_income AS sni ON ep.emp_tax_code = sni.`code`
                 LEFT JOIN emp_sk skk ON emp.emp_flag = 2 
-                AND emp.emp_id = skk.emp_id 
-                AND skk.jenis_sk = 7 
+                    AND emp.emp_id = skk.emp_id 
+                    AND skk.jenis_sk = 7 
                 LEFT JOIN emp_contract empc ON skk.no_sk = empc.contract_no 
             WHERE
                 emp.emp_work_status = %s 
