@@ -58,7 +58,7 @@ def post_data(df: dict):
         "nik": df.nik,
         "nama": df.nama,
         "jenisKelamin": df.jenisKelamin,
-        "agama": df.agama,
+        "agama": "ISLAM",
         "hubunganKeluarga": df.hubunganKeluarga,
         "tempatLahir": df.tempatLahir,
         "tanggalLahir": df.tanggalLahir,

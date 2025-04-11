@@ -37,12 +37,12 @@ def fetch_sk_data():
 
 
 def get_pegawai_id(nik, pegawai_df: pd.DataFrame):
-    result = pegawai_df.query("nik==@nik")
+    result = pegawai_df.query("nik==@nik").reset_index(drop=True)
     return result.pegawai_id.values[0] if not result.empty else 0
 
 
 def get_sk_id(nipam, nomor_sk, sk_df: pd.DataFrame):
-    result = sk_df.query("nipam==@nipam and nomor_sk==@nomor_sk")
+    result = sk_df.query("nipam==@nipam and nomor_sk==@nomor_sk").reset_index(drop=True)
     return result.id.values[0] if not result.empty else 0
 
 
@@ -68,18 +68,18 @@ def get_jenis_mutasi(jenis_sk: int):
 
 
 def get_organisasi_id(nama_organisasi: str, organisasi_df: pd.DataFrame):
-    result = organisasi_df.query("nama==@nama_organisasi")
-    return result.id.values[0] if not result.empty else 0
+    result = organisasi_df.query("nama==@nama_organisasi").reset_index(drop=True)
+    return result["id"].values[0] if not result.empty else 0
 
 
 def get_jabatan_id(nama_jabatan: str, jabatan_df: pd.DataFrame):
-    result = jabatan_df.query("nama==@nama_jabatan")
-    return result.id.values[0] if not result.empty else 0
+    result = jabatan_df.query("nama==@nama_jabatan").reset_index(drop=True)
+    return result["id"].values[0] if not result.empty else 0
 
 
 def get_profesi_id(jabatan_id: int, profesi_df: pd.DataFrame):
     result = profesi_df.query(
-        "jabatan_id == @jabatan_id").reset_index(drop=True)
+        "jabatan_id == @jabatan_id").reset_index(drop=True).reset_index(drop=True)
     return result["id"].values[0] if not result.empty else 0
 
 
@@ -142,9 +142,10 @@ def cleanup_data(df: pd.DataFrame):
         lambda x: get_profesi_name(x, profesi_df))
     df["golongan_id"] = df["golongan"].swifter.apply(
         lambda x: get_golongan_id(x, golongan_df))
-
+    
     df = df[(df["pegawai_id"] > 0) & (
         df["riwayat_sk_id"] > 0)].reset_index(drop=True)
+    
     return df
 
 
@@ -174,11 +175,11 @@ def df_to_tuple_list(df: pd.DataFrame):
 
 def save_riwayat_mutasi(datas):
     query = """
-    INSERT INTO riwayat_mutasi (
-        pegawai_id, riwayat_sk_id, tmt_berlaku, tanggal_berakhir, jenis_mutasi, 
-        organisasi_id, nama_organisasi, jabatan_id, nama_jabatan, profesi_id,
-        nama_profesi, golongan_id, nama_golongan, organisasi_lama_id, nama_organisasi_lama,
-        jabatan_lama_id, nama_jabatan_lama, profesi_lama_id, nama_profesi_lama
+        INSERT INTO riwayat_mutasi (
+            pegawai_id, riwayat_sk_id, tmt_berlaku, tanggal_berakhir, jenis_mutasi, 
+            organisasi_id, nama_organisasi, jabatan_id, nama_jabatan, profesi_id,
+            nama_profesi, golongan_id, nama_golongan, organisasi_lama_id, nama_organisasi_lama,
+            jabatan_lama_id, nama_jabatan_lama, profesi_lama_id, nama_profesi_lama
         ) VALUES (
             %s, %s, %s, %s, %s, 
             %s, %s, %s, %s, %s, 
@@ -186,12 +187,14 @@ def save_riwayat_mutasi(datas):
             %s, %s, %s, %s
         )
     """
-    with get_kepegawaian_connection_pool() as conn:
-        with conn.cursor() as cursor:
-            cursor.executemany(query, datas)
-            conn.commit()
-            ic(cursor.rowcount, "record inserted")
-
+    try:
+        with get_kepegawaian_connection_pool() as conn:
+            with conn.cursor() as cursor:
+                cursor.executemany(query, datas)
+                conn.commit()
+                ic(cursor.rowcount, "record inserted")
+    except Exception as e:
+        ic(e)
 
 if __name__ == "__main__":
     main()

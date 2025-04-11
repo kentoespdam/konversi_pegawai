@@ -26,14 +26,9 @@ def main():
                 print(e)
     ic(f"posting data finish in {time.time()-start_time}s")
 
-    start_time = time.time()
-    edu_df = update_data(edu_df)
-    ic(f"updating data finish in {time.time()-start_time}s")
-
-    start_time = time.time()
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        executor.map(accept_data, [row for row in edu_df.itertuples()])
-    ic(f"putting data finish in {time.time()-start_time}s")
+    # start_time = time.time()
+    # edu_df = update_data(edu_df)
+    # ic(f"updating data finish in {time.time()-start_time}s")
 
 
 def cleanup_data(df: pd.DataFrame):
@@ -77,15 +72,6 @@ def post_data(df: dict):
     }
 
     return do_post("profil/pendidikan", payload)
-
-
-def accept_data(df: dict):
-    payload = {
-        "biodataId": df.biodataId,
-        "isLatest": df.isLatest
-    }
-
-    do_put(f"profil/pendidikan/{id}/accept", payload)
 
 
 if __name__ == "__main__":

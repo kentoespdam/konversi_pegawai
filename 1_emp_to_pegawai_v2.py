@@ -39,11 +39,12 @@ def main():
     ).compute()
     ic(f"total time finish in {time.time()-start_time}s")
 
+    # ic(pegawai_dd["nipam"].size)
+
     start_time = time.time()
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         executor.map(kirim_pegawai, [row for _, row in pegawai_dd.iterrows()])
     ic(f"total time finish in {time.time()-start_time}s")
-
 
 
 def validate_pegawai(

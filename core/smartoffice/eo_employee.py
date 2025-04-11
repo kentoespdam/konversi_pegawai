@@ -86,8 +86,10 @@ def fetch_data_for_pegawai() -> list:
             WHERE
                 emp.emp_work_status = %s 
                 AND emp.emp_code != %s
+                -- AND emp.emp_flag IN (5,6)
             GROUP BY
                 emp.emp_id
+            -- LIMIT 1
             """
     params = (EmpWorkStatus.KaryawanAktif.value, "Pengaduan")
     with get_smartoffice_connection_pool() as conn:
