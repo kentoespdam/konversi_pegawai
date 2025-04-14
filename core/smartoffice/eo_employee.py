@@ -2,6 +2,82 @@ from config import get_smartoffice_connection_pool
 from core.enums import EmpWorkStatus
 
 
+def fetch_employee_for_pegawai():
+    query = """
+        SELECT
+            em.emp_id AS pegawai_id,
+            em.emp_code AS nipam,
+            ep.emp_identity_number AS nik,
+        CASE
+                
+                WHEN em.emp_flag = 1 THEN
+                2 -- PEGAWAI
+                WHEN em.emp_flag = 2 THEN
+                0  -- KONTRAK
+                WHEN em.emp_flag = 3 THEN
+                5 -- NON_PEGAWAI
+                WHEN em.emp_flag = 4 THEN
+                1 -- CAPEG
+                WHEN em.emp_flag = 5 THEN
+                4 -- HONORER
+                WHEN em.emp_flag = 6 THEN
+                3 -- CALON_HONORER
+                ELSE 5 -- NON PEGAWAI
+            END AS status_pegawai,
+            org.org_name AS namaOrganisasi,
+            pos.pos_name AS namaJabatan,
+            gol.golongan AS golongan,
+        CASE
+                WHEN em.emp_work_status = 1 THEN
+                3 -- "LAMARAN_BARU"
+                
+                WHEN em.emp_work_status = 2 THEN
+                4 -- "TAHAP_SELEKSI"
+                
+                WHEN em.emp_work_status = 3 THEN
+                5 -- "DITERIMA"
+                
+                WHEN em.emp_work_status = 4 THEN
+                6 -- "DIREKOMENDASIKAN"
+                
+                WHEN em.emp_work_status = 5 THEN
+                7 -- "DITOLAK"
+                
+                WHEN em.emp_work_status = 6 THEN
+                2 -- "KARYAWAN_AKTIF"
+                
+                WHEN em.emp_work_status = 7 THEN
+                1 -- "DIRUMAHKAN"
+                
+                WHEN em.emp_work_status = 8 THEN
+                0 -- "BERHENTI"
+                ELSE 3 -- LAMARAN_BARU
+            END AS status_kerja,
+            IF(em.emp_flag=1 OR em.emp_flag=4, em.emp_start, NULL) AS tmt_kerja,
+            em.tmt_pensiun,
+            em.emp_sg_id AS gaji_profil_id,
+            em.emp_gp AS gaji_pokok,
+            IFNULL(em.emp_phdp, 0) AS phdp,
+            ep.askes_flag AS is_askes,
+            ep.emp_tax_code,
+            IFNULL(ep.id_rumdin,0) AS rumah_dinas_id,
+            em.jml_tanggungan,
+            em.mkg_tahun,
+            em.mkg_bulan,
+            ep.emp_note AS notes
+        FROM
+            employee AS em
+            INNER JOIN emp_profile AS ep ON em.emp_profile_id = ep.emp_profile_id
+            LEFT JOIN position AS pos ON em.emp_pos_id = pos.pos_id
+            LEFT JOIN organization AS org ON pos.pos_org_id = org.org_id
+            LEFT JOIN golongan AS gol ON em.emp_gol_id = gol.id
+    """
+    with get_smartoffice_connection_pool() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
+
+
 def fetch_data_for_pegawai() -> list:
     """Fetch employee data from the database."""
     query = """
@@ -124,7 +200,7 @@ def fetch_data_for_profil_gaji():
         WHERE
             em.emp_work_status = %s
         """
-    params=(EmpWorkStatus.KaryawanAktif.value,)
+    params = (EmpWorkStatus.KaryawanAktif.value,)
     with get_smartoffice_connection_pool() as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, params)

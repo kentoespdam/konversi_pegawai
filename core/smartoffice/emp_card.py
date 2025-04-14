@@ -2,6 +2,30 @@ from config import get_smartoffice_connection_pool
 from core.enums import EmpWorkStatus
 
 
+def fetch_emp_card_for_kartu_identitas():
+    query = """
+        SELECT
+            ep.emp_identity_number AS nik,
+            ec.ei_number AS nomor_kartu,
+            ec.ei_exp_date AS tanggal_expired,
+            ec.ei_received_date AS tanggal_terima,
+            ec.ei_description AS notes,
+        IF
+            ( ec.ei_status = 3, TRUE, FALSE ) AS is_deleted,
+            ejc.text AS jenis_kitas 
+        FROM
+            emp_card AS ec
+            INNER JOIN employee AS em ON ec.emp_code = em.emp_code
+            INNER JOIN emp_profile AS ep ON em.emp_profile_id = ep.emp_profile_id
+            INNER JOIN sys_reference AS ejc ON ec.ei_type = ejc.`value` 
+            AND ejc.`code` = 'emp_card'
+    """
+    with get_smartoffice_connection_pool() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
+
+
 def fetch_data_for_kartu_identitas(id: int = None):
     query = """
         SELECT

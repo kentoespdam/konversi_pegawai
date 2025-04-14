@@ -1,6 +1,27 @@
 from config import get_smartoffice_connection_pool
 from core.enums import EmpWorkStatus
 
+def fetch_emp_skill_for_keahlian():
+    query = """
+        SELECT
+            ep.emp_identity_number AS biodata_id,
+            es.jenis_id AS jenis_keahlian_id,
+            IF( es.kualifikasi_id = 3, 0, es.kualifikasi_id ) AS kualifikasi,
+            es.sertifikat,
+            es.institusi,
+            es.tahun,
+            es.entry_date AS tanggal_pengajuan,
+            es.approve_date AS tanggal_disetujui,
+        IF
+            ( es.`status` = 3, TRUE, FALSE ) AS is_deleted 
+        FROM
+            emp_skill AS es
+            INNER JOIN emp_profile AS ep ON es.emp_profile_id = ep.emp_profile_id
+    """
+    with get_smartoffice_connection_pool() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
 
 def fetch_data_for_keahlian(id: int = None):
     query = """
