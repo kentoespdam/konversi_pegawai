@@ -26,6 +26,10 @@ def cleanup(df: pd.DataFrame):
         lambda x: x.strftime('%Y-%m-%d') if x is not None else None)
     df["pendidikan_id"] = df["pendidikanTerakhir"].swifter.apply(
         lambda x: get_pendidikan_terakhir_id(x, jejang_pendidikan_df))
+    df["is_deleted"] = df["is_deleted"].swifter.apply(
+        lambda x: True if x == 1 else False)
+    df["is_pegawai"]=df["emp_flag"].swifter.apply(
+        lambda x: False if x == 0 else True)
     return df
 
 
@@ -33,7 +37,6 @@ def get_pendidikan_terakhir_id(pendidikan_terakhir: str, jenjang_pendidikan_df: 
     result = jenjang_pendidikan_df.query(
         "nama == @pendidikan_terakhir").reset_index(drop=True)
     return result["id"].values[0] if not result.empty else 0
-
 
 if __name__ == "__main__":
     main()

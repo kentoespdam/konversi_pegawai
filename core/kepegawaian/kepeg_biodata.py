@@ -17,18 +17,23 @@ def save_biodata_from_emp_profile(df: pd.DataFrame):
         row.pendidikan_id,
         row.golongan_darah,
         row.status_kawin,
-        row.notes
+        row.notes,
+        row.is_pegawai,
+        row.is_deleted,
+        'SYSTEM'
     ) for row in df.itertuples(index=False)]
 
     query = """
     INSERT INTO biodata (
         nik, nama, jenis_kelamin, tempat_lahir, tanggal_lahir,
         alamat, telp, agama, ibu_kandung, pendidikan_id,
-        golongan_darah, status_kawin, notes, created_by
+        golongan_darah, status_kawin, notes, is_pegawai, is_deleted, 
+        created_by
     ) VALUES (
         %s, %s, %s, %s, %s, 
+        %s, %s, %s, %s, %s,
         %s, %s, %s, %s, %s, 
-        %s, %s, %s, 'SYSTEM'
+        %s
     )
     """
 

@@ -20,7 +20,9 @@ def fetch_data_for_biodata():
             ep.emp_blood_type AS golongan_darah,
         IF
             ( ep.id_marital_status = 99, 4, ep.id_marital_status - 1 ) AS status_kawin,
-            ep.emp_note AS notes 
+            ep.emp_note AS notes,
+            IF(ep.emp_status=3,TRUE,FALSE) AS is_deleted,
+            em.emp_flag 
         FROM
             emp_profile AS ep
             LEFT JOIN emp_education AS eed ON ep.emp_profile_id = eed.emp_profile_id 

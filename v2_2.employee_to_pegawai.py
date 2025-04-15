@@ -56,6 +56,8 @@ def cleanup(df: pd.DataFrame):
     df["is_askes"]=df["is_askes"].swifter.apply(
         lambda x: True if x==1 else False
     )
+    df["is_deleted"] = df["is_deleted"].swifter.apply(
+        lambda x: True if x == 1 else False)
     return df
 
 

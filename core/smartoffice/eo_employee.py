@@ -8,8 +8,7 @@ def fetch_employee_for_pegawai():
             em.emp_id AS pegawai_id,
             em.emp_code AS nipam,
             ep.emp_identity_number AS nik,
-        CASE
-                
+            CASE
                 WHEN em.emp_flag = 1 THEN
                 2 -- PEGAWAI
                 WHEN em.emp_flag = 2 THEN
@@ -27,28 +26,21 @@ def fetch_employee_for_pegawai():
             org.org_name AS namaOrganisasi,
             pos.pos_name AS namaJabatan,
             gol.golongan AS golongan,
-        CASE
+            CASE
                 WHEN em.emp_work_status = 1 THEN
                 3 -- "LAMARAN_BARU"
-                
                 WHEN em.emp_work_status = 2 THEN
                 4 -- "TAHAP_SELEKSI"
-                
                 WHEN em.emp_work_status = 3 THEN
                 5 -- "DITERIMA"
-                
                 WHEN em.emp_work_status = 4 THEN
                 6 -- "DIREKOMENDASIKAN"
-                
                 WHEN em.emp_work_status = 5 THEN
                 7 -- "DITOLAK"
-                
                 WHEN em.emp_work_status = 6 THEN
                 2 -- "KARYAWAN_AKTIF"
-                
                 WHEN em.emp_work_status = 7 THEN
                 1 -- "DIRUMAHKAN"
-                
                 WHEN em.emp_work_status = 8 THEN
                 0 -- "BERHENTI"
                 ELSE 3 -- LAMARAN_BARU
@@ -64,7 +56,8 @@ def fetch_employee_for_pegawai():
             em.jml_tanggungan,
             em.mkg_tahun,
             em.mkg_bulan,
-            ep.emp_note AS notes
+            ep.emp_note AS notes,
+            IF(em.emp_status=3,TRUE,FALSE) AS is_deleted
         FROM
             employee AS em
             INNER JOIN emp_profile AS ep ON em.emp_profile_id = ep.emp_profile_id
