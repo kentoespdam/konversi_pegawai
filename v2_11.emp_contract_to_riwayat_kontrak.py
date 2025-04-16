@@ -33,9 +33,16 @@ def cleanup(df: pd.DataFrame):
         lambda x: True if x == 1 else False)
 
     # df_grouped=df.sort_values(["tanggal_sk"],ascending=False).groupby("nik")
-    df["is_latest"] = df["tanggal_sk"].transform(lambda x: x == x.max())
+    df["is_latest"] = df.swifter.apply(
+        lambda x: _get_is_latest(df,x["nik"],x["tanggal_sk"]), axis=1
+    )
     return df
 
+
+def _get_is_latest(df: pd.DataFrame, nik: str, tanggal_sk: date):
+    df_filtered = df[(df["nik"] == nik)].reset_index(drop=True)
+    latest_tanggal_sk = df_filtered["tanggal_sk"].max()
+    return True if latest_tanggal_sk == tanggal_sk else False
 
 def _cleanup_tanggal_sk(x):
     if x == "0000-00-00":
