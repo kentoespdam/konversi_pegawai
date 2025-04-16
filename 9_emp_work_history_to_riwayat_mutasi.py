@@ -6,7 +6,7 @@ from core.kepegawaian.kepeg_golongan import fetch_all_golongan
 from core.kepegawaian.kepeg_jabatan import fetch_jabatan
 from core.kepegawaian.kepeg_organisasi import fetch_organisasi
 from core.kepegawaian.kepeg_profesi import fetch_profesi
-from core.smartoffice.emp_mutation import fetch_data_for_riwayat_mutasi
+from core.smartoffice.emp_work_history import fetch_data_for_riwayat_mutasi
 import swifter
 
 

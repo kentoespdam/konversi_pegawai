@@ -26,7 +26,6 @@ def fetch_emp_work_experience_for_pengalaman_kerja():
             cursor.execute(query)
             return cursor.fetchall()
 
-
 def fetch_data_for_pengalaman_kerja():
     query = """
         SELECT
