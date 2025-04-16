@@ -42,3 +42,25 @@ def save_biodata_from_emp_profile(df: pd.DataFrame):
             cursor.executemany(query, list)
             ic(cursor.rowcount, "row(s) affected")
             connection.commit()
+
+
+def fetch_biodata_for_riwayat_kontrak():
+    query = """
+        SELECT
+            peg.id,
+            bio.nik,
+            bio.nama,
+            peg.status_kerja,
+            peg.status_pegawai 
+        FROM
+            biodata AS bio
+            INNER JOIN pegawai AS peg ON bio.nik = peg.nik 
+        WHERE
+            peg.status_pegawai < 5 
+        ORDER BY
+            bio.nik
+    """
+    with get_kepegawaian_connection_pool() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()

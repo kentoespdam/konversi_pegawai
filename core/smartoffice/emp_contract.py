@@ -1,6 +1,29 @@
 from config import get_smartoffice_connection_pool
 
 
+def fetch_emp_contract_for_riwayat_kontrak():
+    query = """
+        SELECT
+            emp_profile.emp_identity_number AS nik,
+            ec.emp_code AS nipam,
+            0 AS jenis_kontrak,
+            ec.contract_no AS nomor_kontrak,
+            ec.contract_start_date AS tanggal_sk,
+            ec.contract_start_date AS tanggal_mulai,
+            ec.contract_exp_date AS tanggal_selesai,
+            ec.ec_description AS notes,
+            IF( ec.ec_status = 3, TRUE, FALSE ) AS is_deleted 
+        FROM
+            emp_contract AS ec
+            INNER JOIN employee AS em ON ec.emp_code = em.emp_code
+            INNER JOIN emp_profile ON em.emp_profile_id = emp_profile.emp_profile_id
+    """
+    with get_smartoffice_connection_pool() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
+
+
 def fetch_data_for_riwayat_kontrak():
     query = """
         SELECT
