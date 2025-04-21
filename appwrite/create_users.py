@@ -1,13 +1,15 @@
-import swifter
-from config import get_kepegawaian_connection_pool
-import pandas as pd
-from icecream import ic
-from appwrite.services.users import Users
-from appwrite.client import Client
 import sys
 import os.path
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+
+import swifter
+from appwrite.client import Client
+from appwrite.services.users import Users
+from icecream import ic
+import pandas as pd
+from config import get_kepegawaian_connection_pool
+
 
 client = Client()
 
@@ -23,14 +25,15 @@ users = Users(client)
 def fetch_pegawai():
     query = """
         SELECT
-        pegawai.id,
-        pegawai.nipam,
-        biodata.nama 
-    FROM
-        pegawai
-        INNER JOIN biodata ON pegawai.nik = biodata.nik
-    WHERE 
-        pegawai.nipam NOT LIKE 'REC%'
+            pegawai.id,
+            pegawai.nipam,
+            biodata.nama,
+            pegawai.status_kerja
+        FROM
+            pegawai
+            INNER JOIN biodata ON pegawai.nik = biodata.nik
+        WHERE 
+            pegawai.nipam NOT LIKE 'REC%'
     """
     with get_kepegawaian_connection_pool() as conn:
         with conn.cursor() as cursor:
@@ -48,6 +51,22 @@ def main():
             email=row.email,
             password=row.password,
             name=row.nama)
+        users.update_prefs(
+            user_id=f"{row.id}",
+            prefs={
+                "roles": ["USER", "ADMIN", "SYSTEM"] if row.nipam == "900800456" else ["USER"]
+            }
+        )
+        users.update_email_verification(
+            f"{row.id}",
+            True
+        )
+        if row.status_kerja != 2:
+            users.update_status(
+                f"{row.id}",
+                False
+            )
+        ic(f"{row.nipam} created")
 
 
 if __name__ == "__main__":
