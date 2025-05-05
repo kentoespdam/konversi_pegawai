@@ -24,16 +24,17 @@ def save_kartu_identitas_from_emp_card(df: pd.DataFrame):
         row.tanggal_terima,
         row.notes,
         row.is_deleted,
+        0,
         'SYSTEM'
     ) for row in df.itertuples(index=False)]
 
     query = """
         INSERT INTO kartu_identitas (
             nik, jenis_kitas_id, nomor_kartu, tanggal_expired, tanggal_terima, 
-            notes, is_deleted, created_by
+            notes, is_deleted, version, created_by
         ) VALUES (
             %s, %s, %s, %s, %s, 
-            %s, %s, %s
+            %s, %s, %s, %s
         ) ON DUPLICATE KEY UPDATE 
             nik=VALUES(nik),
             jenis_kitas_id=VALUES(jenis_kitas_id),

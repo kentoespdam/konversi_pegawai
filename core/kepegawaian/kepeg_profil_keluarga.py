@@ -17,6 +17,7 @@ def save_profil_keluarga_from_emp_profile(df: pd.DataFrame):
         row.status_kawin,
         row.notes,
         row.is_deleted,
+        0, 
         'SYSTEM'
     )for row in df.itertuples(index=False)]
 
@@ -24,11 +25,11 @@ def save_profil_keluarga_from_emp_profile(df: pd.DataFrame):
         INSERT INTO profil_keluarga (
             biodata_id, nama, jenis_kelamin, agama, hubungan_keluarga, 
             tempat_lahir, tanggal_lahir, tanggungan, status_pendidikan, status_kawin, 
-            notes, is_deleted, created_by
+            notes, is_deleted, version, created_by
         ) VALUES (
             %s, %s, %s, %s, %s,
             %s, %s, %s, %s, %s, 
-            %s, %s, %s
+            %s, %s, %s, %s
         )
     """
 

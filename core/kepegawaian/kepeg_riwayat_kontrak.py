@@ -17,6 +17,7 @@ def save_riwayat_kontrak_from_emp_contract(df: pd.DataFrame):
         row.is_latest,
         row.notes,
         row.is_deleted,
+        0,
         'SYSTEM'
     )for row in df.itertuples(index=False)]
 
@@ -24,11 +25,11 @@ def save_riwayat_kontrak_from_emp_contract(df: pd.DataFrame):
         INSERT INTO riwayat_kontrak (
             jenis_kontrak, pegawai_id, nipam, nama, nomor_kontrak, 
             tanggal_sk, tanggal_mulai, tanggal_selesai, is_latest, notes, 
-            is_deleted, created_by
+            is_deleted, version, created_by
         ) VALUES (
             %s, %s, %s, %s, %s, 
             %s, %s, %s, %s, %s, 
-            %s, %s
+            %s, %s, %s
         )
     """
 

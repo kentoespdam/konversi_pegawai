@@ -101,6 +101,7 @@ def save_pegawai_from_employee(df: pd.DataFrame):
         row.mkg_tahun,
         row.mkg_bulan,
         row.notes,
+        0,
         'SYSTEM'
     ) for row in df.itertuples(index=False)]
 
@@ -110,13 +111,13 @@ def save_pegawai_from_employee(df: pd.DataFrame):
             jabatan_id, profesi_id, golongan_id, grade_id, status_kerja, 
             tmt_kerja, tmt_pensiun, gaji_profil_id, gaji_pendapatan_non_pajak_id, rumah_dinas_id, 
             gaji_pokok, is_askes, phdp, jml_tanggungan, mkg_tahun, 
-            mkg_bulan, notes, created_by
+            mkg_bulan, notes, version, created_by
         ) VALUES (
             %s, %s, %s, %s, %s,
             %s, %s, %s, %s, %s,
             %s, %s, %s, %s, %s,
             %s, %s, %s, %s, %s,
-            %s, %s, %s
+            %s, %s, %s, %s
         )
     """
 

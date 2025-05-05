@@ -20,6 +20,7 @@ def save_biodata_from_emp_profile(df: pd.DataFrame):
         row.notes,
         row.is_pegawai,
         row.is_deleted,
+        0,
         'SYSTEM'
     ) for row in df.itertuples(index=False)]
 
@@ -28,12 +29,12 @@ def save_biodata_from_emp_profile(df: pd.DataFrame):
         nik, nama, jenis_kelamin, tempat_lahir, tanggal_lahir,
         alamat, telp, agama, ibu_kandung, pendidikan_id,
         golongan_darah, status_kawin, notes, is_pegawai, is_deleted, 
-        created_by
+        version, created_by
     ) VALUES (
         %s, %s, %s, %s, %s, 
         %s, %s, %s, %s, %s,
         %s, %s, %s, %s, %s, 
-        %s
+        %s, %s
     )
     """
 

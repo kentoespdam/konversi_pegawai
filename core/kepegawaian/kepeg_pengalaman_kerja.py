@@ -14,16 +14,19 @@ def save_pengalaman_kerja_from_emp_work_experience(df: pd.DataFrame):
         row.tahun_keluar,
         row.notes,
         row.is_deleted,
+        0,
         'SYSTEM'
     )for row in df.itertuples(index=False)]
 
     query = """
         INSERT INTO pengalaman_kerja (
             biodata_id, nama_perusahaan, type_perusahaan, jabatan, lokasi, 
-            tahun_masuk, tahun_keluar, notes, is_deleted, created_by
+            tahun_masuk, tahun_keluar, notes, is_deleted, version, 
+            created_by
         ) VALUES (
             %s, %s, %s, %s, %s, 
-            %s, %s, %s, %s, %s
+            %s, %s, %s, %s, %s,
+            %s
         )
     """
 

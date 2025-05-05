@@ -20,6 +20,7 @@ def save_pendidikan_from_emp_education(df: pd.DataFrame):
         row.tanggal_disetujui,
         row.disetujui_oleh,
         row.is_deleted,
+        0,
         'SYSTEM'
     )for row in df.itertuples(index=False)]
 
@@ -28,12 +29,12 @@ def save_pendidikan_from_emp_education(df: pd.DataFrame):
             biodata_id, jenjang_id, gelar_belakang, jurusan, institusi, 
             tahun_masuk, is_lulus, tahun_lulus, gpa, is_latest, disetujui, 
             tanggal_pengajuan, tanggal_disetujui, disetujui_oleh, is_deleted, 
-            created_by
+            version, created_by
         ) VALUES (
                 %s, %s, %s, %s, %s, 
                 %s, %s, %s, %s, %s, 
                 %s, %s, %s, %s, %s, 
-                %s
+                %s, %s
         ) ON DUPLICATE KEY UPDATE
             biodata_id=VALUES(biodata_id),
             jenjang_id=VALUES(jenjang_id),

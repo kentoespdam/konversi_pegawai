@@ -20,6 +20,7 @@ def save_pelatihan_from_emp_training(df: pd.DataFrame):
         row.tanggal_pengajuan,
         row.tanggal_disetujui,
         row.is_deleted,
+        0,
         'SYSTEM'
     )for row in df.itertuples(index=False)]
 
@@ -28,12 +29,12 @@ def save_pelatihan_from_emp_training(df: pd.DataFrame):
             biodata_id, jenis_pelatihan_id, nama, lembaga, tanggal_mulai, 
             tanggal_selesai, lulus, nilai, ikatan_dinas, tanggal_akhir_ikatan, 
             notes, disetujui, tanggal_pengajuan, tanggal_disetujui, is_deleted, 
-            created_by
+            version, created_by
         ) VALUES (
             %s, %s, %s, %s, %s, 
             %s, %s, %s, %s, %s, 
             %s, %s, %s, %s, %s, 
-            %s
+            %s, %s
         )
     """
 

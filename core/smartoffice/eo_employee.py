@@ -45,7 +45,7 @@ def fetch_employee_for_pegawai():
                 0 -- "BERHENTI"
                 ELSE 3 -- LAMARAN_BARU
             END AS status_kerja,
-            IF(em.emp_flag=1 OR em.emp_flag=4, em.emp_start, NULL) AS tmt_kerja,
+            em.emp_start AS tmt_kerja,
             em.tmt_pensiun,
             em.emp_sg_id AS gaji_profil_id,
             em.emp_gp AS gaji_pokok,

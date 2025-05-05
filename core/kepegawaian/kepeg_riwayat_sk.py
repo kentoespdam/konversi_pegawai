@@ -22,6 +22,7 @@ def save_riwayat_sk_from_emp_sk(df: pd.DataFrame):
         row.update_master,
         row.notes,
         row.is_deleted,
+        0, 
         'SYSTEM'
     )for row in df.itertuples(index=False)]
 
@@ -30,12 +31,12 @@ def save_riwayat_sk_from_emp_sk(df: pd.DataFrame):
             pegawai_id, nipam, nama, nomor_sk, jenis_sk, 
             tanggal_sk, tmt_berlaku, golongan_id, gaji_pokok, mkg_tahun, 
             mkg_bulan, kenaikan_berikutnya, mkgb_tahun, mkgb_bulan, update_master, 
-            notes, is_deleted, created_by
+            notes, is_deleted, version, created_by
         ) VALUES (
             %s, %s, %s, %s, %s,
             %s, %s, %s, %s, %s, 
             %s, %s, %s, %s, %s, 
-            %s, %s, %s
+            %s, %s, %s, %s
         )
     """
     try:
