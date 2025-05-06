@@ -48,7 +48,15 @@ def cleanup(df: pd.DataFrame):
     df["gaji_profil_id"] = df["gaji_profil_id"].swifter.apply(
         lambda x: x if not pd.isna(x) else 0).astype(int)
 
+    df["tmt_mutasi"] = df["tmt_mutasi"].swifter.apply(
+        lambda x: x.strftime("%Y-%m-%d") if x is not None else None)
+    df["tmt_jabatan"] = df["tmt_jabatan"].swifter.apply(
+        lambda x: x.strftime("%Y-%m-%d") if x is not None else None) 
+    df["tmt_golongan"] = df["tmt_golongan"].swifter.apply(
+        lambda x: x.strftime("%Y-%m-%d") if x is not None else None) 
     df["tmt_kerja"] = df["tmt_kerja"].swifter.apply(
+        lambda x: x.strftime("%Y-%m-%d") if x is not None else None)
+    df["tanggal_pengangkatan"] = df["tanggal_pengangkatan"].swifter.apply(
         lambda x: x.strftime("%Y-%m-%d") if x is not None else None)
     df["tmt_pensiun"] = df["tmt_pensiun"].swifter.apply(
         lambda x: x.strftime("%Y-%m-%d") if x is not None else None)

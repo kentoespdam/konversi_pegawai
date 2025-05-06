@@ -89,7 +89,11 @@ def save_pegawai_from_employee(df: pd.DataFrame):
         row.golongan_id if row.golongan_id > 0 else None,
         row.grade_id if row.grade_id > 0 else None,
         row.status_kerja,
+        row.tmt_mutasi,
+        row.tmt_jabatan,
+        row.tmt_golongan,
         row.tmt_kerja,
+        row.tanggal_pengangkatan,
         row.tmt_pensiun,
         row.gaji_profil_id if row.gaji_profil_id > 0 else None,
         row.gaji_pendapatan_non_pajak_id if row.gaji_pendapatan_non_pajak_id > 0 else None,
@@ -106,18 +110,20 @@ def save_pegawai_from_employee(df: pd.DataFrame):
     ) for row in df.itertuples(index=False)]
 
     query = """
-        INSERT INTO pegawai (
+        REPLACE INTO pegawai (
             id, nipam, nik, status_pegawai, organisasi_id, 
             jabatan_id, profesi_id, golongan_id, grade_id, status_kerja, 
-            tmt_kerja, tmt_pensiun, gaji_profil_id, gaji_pendapatan_non_pajak_id, rumah_dinas_id, 
-            gaji_pokok, is_askes, phdp, jml_tanggungan, mkg_tahun, 
-            mkg_bulan, notes, version, created_by
+            tmt_mutasi, tmt_jabatan, tmt_golongan, tmt_kerja, tanggal_pengangkatan,
+            tmt_pensiun, gaji_profil_id, gaji_pendapatan_non_pajak_id, rumah_dinas_id, gaji_pokok, 
+            is_askes, phdp, jml_tanggungan, mkg_tahun, mkg_bulan, 
+            notes, version, created_by
         ) VALUES (
             %s, %s, %s, %s, %s,
             %s, %s, %s, %s, %s,
             %s, %s, %s, %s, %s,
             %s, %s, %s, %s, %s,
-            %s, %s, %s, %s
+            %s, %s, %s, %s, %s,
+            %s, %s, %s
         )
     """
 

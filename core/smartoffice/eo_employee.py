@@ -45,7 +45,11 @@ def fetch_employee_for_pegawai():
                 0 -- "BERHENTI"
                 ELSE 3 -- LAMARAN_BARU
             END AS status_kerja,
+            em.emp_last_mutation AS tmt_mutasi,
+            em.tmt_sk_jabatan AS tmt_jabatan,
+            em.tmt_sk_gol AS tmt_golongan,
             em.emp_start AS tmt_kerja,
+            em.tgl_pengangkatan AS tanggal_pengangkatan,
             em.tmt_pensiun,
             em.emp_sg_id AS gaji_profil_id,
             em.emp_gp AS gaji_pokok,
