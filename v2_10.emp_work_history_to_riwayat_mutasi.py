@@ -45,7 +45,7 @@ def cleanup(df: pd.DataFrame):
         lambda x: _cleanup_profesi_id(profesi_df, x, "id")
     )
     df["nama_profesi_lama"] = df["jabatan_lama_id"].swifter.apply(
-        lambda x: _cleanup_profesi_id(profesi_df, x, "id")
+        lambda x: _cleanup_profesi_id(profesi_df, x, "nama")
     )
 
     df["tmt_berlaku"] = df["tmt_berlaku"].swifter.apply(
