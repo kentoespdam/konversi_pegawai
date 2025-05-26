@@ -4,9 +4,11 @@ from config import get_smartoffice_connection_pool
 def fetch_emp_contract_for_riwayat_kontrak():
     query = """
         SELECT
-            emp_profile.emp_identity_number AS nik,
+            ec.ec_id AS id,
+            ep.emp_identity_number AS nik,
             ec.emp_code AS nipam,
-            ec.emp_name AS nama,
+            ep.emp_name AS nama,
+            em.emp_work_status AS status_kerja,
             0 AS jenis_kontrak,
             ec.contract_no AS nomor_kontrak,
             ec.contract_start_date AS tanggal_sk,
@@ -17,7 +19,7 @@ def fetch_emp_contract_for_riwayat_kontrak():
         FROM
             emp_contract AS ec
             INNER JOIN employee AS em ON ec.emp_code = em.emp_code
-            INNER JOIN emp_profile ON em.emp_profile_id = emp_profile.emp_profile_id
+            INNER JOIN emp_profile AS ep ON em.emp_profile_id = ep.emp_profile_id
     """
     with get_smartoffice_connection_pool() as conn:
         with conn.cursor() as cursor:

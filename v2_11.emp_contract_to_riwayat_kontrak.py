@@ -33,6 +33,9 @@ def cleanup(df: pd.DataFrame):
     df["is_latest"] = df.swifter.apply(
         lambda x: _get_is_latest(df,x["nik"],x["tanggal_sk"]), axis=1
     )
+    df["jenis_kontrak"]=df.swifter.apply(
+        lambda x: _get_jenis_kontrak(x, pegawai_df), axis=1
+    )
     return df
 
 
@@ -54,6 +57,12 @@ def _get_pegawai_id(df: pd.DataFrame, nik: str, col: str = "id"):
         result = result[result["status_kerja"] == 2].reset_index(drop=True)
     return result.iloc[0][col] if not result.empty else 0 if col == "id" else None
 
+def _get_jenis_kontrak(ps: pd.Series, pd:pd.DataFrame):
+    if (ps["is_latest"] and ps["status_kerja"]==8):
+        return 2
+    elif not ps["nipam"].startswith("KO-"):
+        return 1
+    return 0
 
 if __name__ == "__main__":
     main()
