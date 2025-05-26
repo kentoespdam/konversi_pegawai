@@ -14,12 +14,15 @@ def fetch_emp_contract_for_riwayat_kontrak():
             ec.contract_start_date AS tanggal_sk,
             ec.contract_start_date AS tanggal_mulai,
             ec.contract_exp_date AS tanggal_selesai,
+            em.emp_pos_id AS jabatan_id,
+            pos.pos_org_id AS organisasi_id,
             ec.ec_description AS notes,
             IF( ec.ec_status = 3, TRUE, FALSE ) AS is_deleted 
         FROM
             emp_contract AS ec
             INNER JOIN employee AS em ON ec.emp_code = em.emp_code
             INNER JOIN emp_profile AS ep ON em.emp_profile_id = ep.emp_profile_id
+            INNER JOIN position AS pos ON em.emp_pos_id = pos.pos_id
     """
     with get_smartoffice_connection_pool() as conn:
         with conn.cursor() as cursor:
