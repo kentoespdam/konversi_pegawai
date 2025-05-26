@@ -24,9 +24,6 @@ def cleanup(df: pd.DataFrame):
     pegawai_df = pd.DataFrame(fetch_biodata_for_riwayat_kontrak())
     df["pegawai_id"] = df["nik"].swifter.apply(
         lambda x: _get_pegawai_id(pegawai_df, x))
-    df["nama"] = df["nik"].swifter.apply(
-        lambda x: _get_pegawai_id(pegawai_df, x, "nama"))
-
     df["tanggal_sk"] = df["tanggal_sk"].swifter.apply(
         lambda x: _cleanup_tanggal_sk(x))
     df["is_deleted"] = df["is_deleted"].swifter.apply(

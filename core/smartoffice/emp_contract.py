@@ -6,6 +6,7 @@ def fetch_emp_contract_for_riwayat_kontrak():
         SELECT
             emp_profile.emp_identity_number AS nik,
             ec.emp_code AS nipam,
+            ec.emp_name AS nama,
             0 AS jenis_kontrak,
             ec.contract_no AS nomor_kontrak,
             ec.contract_start_date AS tanggal_sk,
