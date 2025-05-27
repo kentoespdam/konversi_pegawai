@@ -25,16 +25,16 @@ def filter_sk(df: pd.DataFrame, no_sk: str, esk_no_sk: str = None):
 def cleanup_init(df: pd.DataFrame):
     df["ref_id"] = 0
     df["status"] = 1
-    df["keterangan"] = df["keterangan"].swifter.apply(
-        lambda x: _cleanup_keterangan(x))
+    df["notes"] = df["notes"].swifter.apply(
+        lambda x: _cleanup_notes(x))
     return df
 
 
-def _cleanup_keterangan(keterangan):
-    if keterangan is None or keterangan == "":
+def _cleanup_notes(notes):
+    if notes is None or notes == "":
         return "Init Smartoffice"
     else:
-        return keterangan
+        return notes
 
 
 if __name__ == "__main__":

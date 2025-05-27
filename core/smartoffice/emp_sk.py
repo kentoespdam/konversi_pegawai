@@ -74,7 +74,7 @@ def save_emp_sk_from_emp_work_history(df: pd.DataFrame):
         row.tgl_sk,
         row.tmt_sk,
         row.status,
-        row.keterangan
+        row.notes
     ) for row in df.itertuples(index=False)]
 
     query = """
