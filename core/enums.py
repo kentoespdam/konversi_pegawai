@@ -79,3 +79,15 @@ class EStatusKerja(Enum):
     DITERIMA = 5
     DIREKOMENDASIKAN = 6
     DITOLAK = 7
+
+
+class EJenisSk(Enum):
+    SK_KENAIKAN_PANGKAT_GOLONGAN = 0
+    SK_CAPEG = 1
+    SK_PEGAWAI_TETAP = 2
+    SK_JABATAN = 3
+    SK_MUTASI = 4
+    SK_PENSIUN = 5
+    SK_LAINNYA = 6
+    SK_PENYESUAIAN_GAJI = 7
+    SK_KENAIKAN_GAJI_BERKALA = 8
