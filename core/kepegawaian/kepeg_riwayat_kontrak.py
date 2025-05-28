@@ -32,7 +32,22 @@ def save_riwayat_kontrak_from_emp_contract(df: pd.DataFrame):
             %s, %s, %s, %s, %s, 
             %s, %s, %s, %s, %s, 
             %s, %s, %s, %s, %s
-        )
+        ) ON DUPLICATE KEY UPDATE 
+            jenis_kontrak = VALUES(jenis_kontrak),
+            pegawai_id = VALUES(pegawai_id),
+            nipam = VALUES(nipam),
+            nama = VALUES(nama),
+            nomor_kontrak = VALUES(nomor_kontrak),
+            tanggal_sk = VALUES(tanggal_sk),
+            tanggal_mulai = VALUES(tanggal_mulai),
+            tanggal_selesai = VALUES(tanggal_selesai),
+            organisasi_id = VALUES(organisasi_id),
+            jabatan_id = VALUES(jabatan_id),
+            is_latest = VALUES(is_latest),
+            notes = VALUES(notes),
+            is_deleted = VALUES(is_deleted),
+            version = version + 1,
+            created_by = VALUES(created_by)
     """
 
     with get_kepegawaian_connection_pool(autocommit=True) as connection:
