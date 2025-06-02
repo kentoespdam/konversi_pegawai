@@ -41,6 +41,7 @@ def fetch_emp_work_history_for_riwayat_mutasi():
             em.emp_id AS pegawai_id,
             ewh.ewh_sk_no AS nomor_sk,
             ewh.emp_code AS nipam,
+            ep.emp_name AS nama,
             ewh.ewh_sdate AS tmt_berlaku,
             ewh.ewh_edate AS tanggal_berakhir,
             ewh.ewh_type AS jenis_mutasi,
@@ -57,6 +58,7 @@ def fetch_emp_work_history_for_riwayat_mutasi():
         FROM
             emp_work_history AS ewh
             INNER JOIN employee AS em ON ewh.emp_code = em.emp_code
+            INNER JOIN emp_profile AS ep ON em.emp_profile_id = ep.emp_profile_id 
     """
     with get_smartoffice_connection_pool() as conn:
         with conn.cursor() as cursor:
