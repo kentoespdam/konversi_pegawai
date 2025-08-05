@@ -10,7 +10,7 @@ def fetch_emp_work_history_for_emp_sk():
             esk_no_sk,
             tgl_sk,
             tmt_sk,
-            keterangan 
+            notes 
         FROM
             (
             SELECT
@@ -20,7 +20,7 @@ def fetch_emp_work_history_for_emp_sk():
                 esk.no_sk AS esk_no_sk,
                 ewh.ewh_sdate AS tgl_sk,
                 ewh.ewh_sdate AS tmt_sk,
-                ewh.ewh_note AS keterangan 
+                ewh.ewh_note AS notes 
             FROM
                 emp_work_history AS ewh
                 LEFT JOIN emp_sk AS esk ON ewh.ewh_sk_no = esk.no_sk

@@ -9,6 +9,9 @@ import swifter
 def main():
     start_time = time.time()
     sk_df = pd.DataFrame(fetch_emp_work_history_for_emp_sk())
+    if(sk_df.empty):
+        ic("sk_df is empty")
+        return
     sk_df = cleanup_init(sk_df)
     # ic(sk_df)
     ic(f"generating data finish in {time.time()-start_time}s")
