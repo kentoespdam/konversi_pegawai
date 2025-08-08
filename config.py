@@ -1,9 +1,17 @@
+import logging
 import os
 from dotenv import load_dotenv
 import pymysql
 import pymysqlpool
 
 load_dotenv()
+
+logging.basicConfig(
+    level="DEBUG",  # os.getenv('LOG_LEVEL', 'INFO'),
+    format="%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)",
+    encoding="utf-8",
+)
+LOGGER = logging.getLogger(__name__)
 
 DEFAULT_EO_DB_CONFIG = {
     "host": os.getenv("DB_HOST"),
