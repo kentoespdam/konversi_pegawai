@@ -3,7 +3,7 @@ import pandas as pd
 from icecream import ic
 from core.kepegawaian.kepeg_pengalaman_kerja import save_pengalaman_kerja_from_emp_work_experience
 from core.smartoffice.emp_work_experience import fetch_emp_work_experience_for_pengalaman_kerja
-import swifter
+import swifter # noqa
 
 
 def main():
