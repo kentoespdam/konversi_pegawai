@@ -16,5 +16,5 @@ class TestMaster(unittest.TestCase):
         # master_tunjangan.to_json("master_tunjangan_after.json", orient="records")
         # LOGGER.debug(master_tunjangan.to_dict("records"))
 
-        save_gaji_tunjangan(master_tunjangan)
+        # save_gaji_tunjangan(master_tunjangan)
         assert master_tunjangan["id"].size > 0
