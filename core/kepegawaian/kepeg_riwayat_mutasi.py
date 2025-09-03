@@ -1,7 +1,7 @@
 import pandas as pd
 from icecream import ic
 
-from config import get_kepegawaian_connection_pool
+from core.config import get_kepegawaian_connection_pool
 
 
 def save_riwayat_mutasi_from_emp_work_history(df: pd.DataFrame):
@@ -31,7 +31,7 @@ def save_riwayat_mutasi_from_emp_work_history(df: pd.DataFrame):
         row.notes,
         0,
         'SYSTEM'
-    )for row in df.itertuples(index=False)]
+    ) for row in df.itertuples(index=False)]
     query = """
         INSERT INTO riwayat_mutasi (
             pegawai_id, nipam, nama, riwayat_sk_id, tmt_berlaku, 
@@ -49,7 +49,11 @@ def save_riwayat_mutasi_from_emp_work_history(df: pd.DataFrame):
     """
     with get_kepegawaian_connection_pool(autocommit=True) as connection:
         with connection.cursor() as cursor:
-            cursor.executemany(query, data)
-            affected = cursor.rowcount
-            ic(affected, "row(s) affected")
-            connection.commit()
+            try:
+                cursor.executemany(query, data)
+                affected = cursor.rowcount
+                ic(affected, "row(s) affected")
+                connection.commit()
+            except Exception as e:
+                ic(e)
+                connection.rollback()

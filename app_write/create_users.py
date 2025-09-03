@@ -5,12 +5,11 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
 )
 
-import swifter
 from appwrite.client import Client
 from appwrite.services.users import Users
 from icecream import ic
 import pandas as pd
-from config import get_kepegawaian_connection_pool
+from core.config import get_kepegawaian_connection_pool
 
 
 client = Client()

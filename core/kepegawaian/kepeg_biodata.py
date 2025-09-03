@@ -1,10 +1,10 @@
 import pandas as pd
 from icecream import ic
-from config import get_kepegawaian_connection_pool
+from core.config import get_kepegawaian_connection_pool, LOGGER
 
 
 def save_biodata_from_emp_profile(df: pd.DataFrame):
-    list = [(
+    data_list = [(
         row.nik,
         row.nama,
         row.jenis_kelamin,
@@ -35,14 +35,33 @@ def save_biodata_from_emp_profile(df: pd.DataFrame):
         %s, %s, %s, %s, %s,
         %s, %s, %s, %s, %s, 
         %s, %s
-    )
+    ) ON DUPLICATE KEY UPDATE 
+        nik=VALUES(nik),
+        nama=VALUES(nama),
+        jenis_kelamin=VALUES(jenis_kelamin),
+        tempat_lahir=VALUES(tempat_lahir),
+        tanggal_lahir=VALUES(tanggal_lahir),
+        alamat=VALUES(alamat),
+        telp=VALUES(telp),
+        agama=VALUES(agama),
+        ibu_kandung=VALUES(ibu_kandung),
+        pendidikan_id=VALUES(pendidikan_id),
+        golongan_darah=VALUES(golongan_darah),
+        status_kawin=VALUES(status_kawin),
+        notes=VALUES(notes),
+        is_pegawai=VALUES(is_pegawai),
+        is_deleted=VALUES(is_deleted)
     """
 
     with get_kepegawaian_connection_pool(autocommit=True) as connection:
         with connection.cursor() as cursor:
-            cursor.executemany(query, list)
-            ic(cursor.rowcount, "row(s) affected")
-            connection.commit()
+            try:
+                cursor.executemany(query, data_list)
+                LOGGER.info(f"{cursor.rowcount} row(s) affected")
+                connection.commit()
+            except Exception as e:
+                LOGGER.error(e)
+                raise e
 
 
 def fetch_biodata_for_riwayat_kontrak():

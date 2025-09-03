@@ -1,4 +1,4 @@
-from config import get_smartoffice_connection_pool
+from core.config import get_smartoffice_connection_pool
 import pandas as pd
 from icecream import ic
 
@@ -85,10 +85,29 @@ def save_emp_sk_from_emp_work_history(df: pd.DataFrame):
             %s, %s, %s, %s, %s, 
             %s, %s, %s
         )
+        ON DUPLICATE KEY UPDATE 
+        emp_id=VALUES(emp_id),
+        jenis_sk=VALUES(jenis_sk),
+        ref_id=VALUES(ref_id),
+        no_sk=VALUES(no_sk),
+        tgl_sk=VALUES(tgl_sk),
+        tmt_sk=VALUES(tmt_sk),
+        status=VALUES(status),
+        keterangan=VALUES(keterangan)
     """
     with get_smartoffice_connection_pool() as conn:
         with conn.cursor() as cursor:
             cursor.executemany(query, data)
+            affected = cursor.rowcount
+            ic(affected, "row(s) affected")
+            conn.commit()
+
+
+def update_init_smartoffice_no_sk():
+    query = "UPDATE emp_sk SET no_sk=%s WHERE no_sk IS NULL OR no_sk = '' OR no_sk='-'"
+    with get_smartoffice_connection_pool() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query, "Init SmartOffice")
             affected = cursor.rowcount
             ic(affected, "row(s) affected")
             conn.commit()

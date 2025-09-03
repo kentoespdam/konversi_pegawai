@@ -1,4 +1,4 @@
-from config import get_smartoffice_connection_pool
+from core.config import get_smartoffice_connection_pool
 from core.enums import EmpWorkStatus
 
 def fetch_emp_family_for_profil_keluarga():

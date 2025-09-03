@@ -1,8 +1,8 @@
 import icecream
-from config import get_kepegawaian_connection_pool
 import pandas as pd
 from icecream import ic
 
+from core.config import get_kepegawaian_connection_pool
 from core.enums import EJenisSk
 
 
@@ -143,38 +143,39 @@ def save_pegawai_from_employee(df: pd.DataFrame):
 
 def update_sk_pegawai(df: pd.DataFrame, jenis_sk: EJenisSk):
     data = [(
-        row.id,
-        row.pegawai_id
-    ) if jenis_sk == EJenisSk.SK_CAPEG else (row.id, row.tmt_berlaku, row.pegawai_id) for row in df.itertuples(index=False)]
+                row.id,
+                row.pegawai_id
+            ) if jenis_sk == EJenisSk.SK_CAPEG else (row.id, row.tmt_berlaku, row.pegawai_id) for row in
+            df.itertuples(index=False)]
 
     query = _generate_query_sk_capeg(jenis_sk)
     if query is None:
         return
 
-    try:
-        with get_kepegawaian_connection_pool(autocommit=True) as connection:
-            with connection.cursor() as cursor:
+    with get_kepegawaian_connection_pool(autocommit=True) as connection:
+        with connection.cursor() as cursor:
+            try:
                 cursor.executemany(query, data)
                 affected = cursor.rowcount
                 ic(affected, "row(s) affected")
                 connection.commit()
-    except Exception as e:
-        ic(e)
-        raise e
+            except Exception as e:
+                ic(e)
+                connection.rollback()
 
 
 def _generate_query_sk_capeg(jenis_sk: EJenisSk):
-    if (jenis_sk == EJenisSk.SK_CAPEG):
+    if jenis_sk == EJenisSk.SK_CAPEG:
         return "UPDATE pegawai SET ref_sk_capeg_id=%s WHERE id=%s"
-    elif (jenis_sk == EJenisSk.SK_KENAIKAN_GAJI_BERKALA):
+    elif jenis_sk == EJenisSk.SK_KENAIKAN_GAJI_BERKALA:
         return "UPDATE pegawai SET ref_sk_gaji_berkala_id=%s, tmt_gaji_berkala=%s WHERE id=%s"
-    elif (jenis_sk == EJenisSk.SK_KENAIKAN_PANGKAT_GOLONGAN):
+    elif jenis_sk == EJenisSk.SK_KENAIKAN_PANGKAT_GOLONGAN:
         return "UPDATE pegawai SET ref_sk_gol_id=%s, tmt_golongan=%s WHERE id=%s"
-    elif (jenis_sk == EJenisSk.SK_JABATAN):
+    elif jenis_sk == EJenisSk.SK_JABATAN:
         return "UPDATE pegawai SET ref_sk_jabatan_id=%s, tmt_jabatan=%s WHERE id=%s"
-    elif (jenis_sk == EJenisSk.SK_MUTASI):
+    elif jenis_sk == EJenisSk.SK_MUTASI:
         return "UPDATE pegawai SET ref_sk_mutasi_id=%s, tmt_mutasi=%s WHERE id=%s"
-    elif (jenis_sk == EJenisSk.SK_PEGAWAI_TETAP):
+    elif jenis_sk == EJenisSk.SK_PEGAWAI_TETAP:
         return "UPDATE pegawai SET ref_sk_pegawai_id=%s, tmt_pegawai=%s WHERE id=%s"
     else:
         return None

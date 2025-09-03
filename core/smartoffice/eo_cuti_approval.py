@@ -1,6 +1,6 @@
 import pandas as pd
 
-from config import get_smartoffice_connection_pool
+from core.config import get_smartoffice_connection_pool
 
 
 def fetch_cuti_approval():

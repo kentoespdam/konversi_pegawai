@@ -1,4 +1,4 @@
-from config import get_smartoffice_connection_pool
+from core.config import get_smartoffice_connection_pool
 
 
 def fetch_emp_contract_for_riwayat_kontrak():

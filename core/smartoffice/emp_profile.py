@@ -1,4 +1,4 @@
-from config import get_smartoffice_connection_pool
+from core.config import get_smartoffice_connection_pool
 
 
 def fetch_data_for_biodata():
@@ -30,6 +30,8 @@ def fetch_data_for_biodata():
             LEFT JOIN sys_reference AS ref_edu ON eed.edu_level = ref_edu.`value` 
             AND ref_edu.`code` = 'pendidikan'
             LEFT JOIN employee em ON ep.emp_profile_id = em.emp_profile_id
+        WHERE
+            ep.emp_identity_number IS NOT NULL
         GROUP BY
             ep.emp_profile_id
     """

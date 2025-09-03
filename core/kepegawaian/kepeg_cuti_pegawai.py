@@ -1,5 +1,5 @@
 import pandas as pd
-from config import get_kepegawaian_connection_pool
+from core.config import get_kepegawaian_connection_pool
 from icecream import ic
 
 
@@ -93,4 +93,5 @@ def save_cuti_pegawai(df: pd.DataFrame):
                 conn.commit()
     except Exception as e:
         ic(e)
+        conn.rollback()
         # raise e

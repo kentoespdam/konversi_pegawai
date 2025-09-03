@@ -1,4 +1,4 @@
-from config import get_kepegawaian_connection_pool
+from core.config import get_kepegawaian_connection_pool
 
 
 def fetch_all_jenis_kartu():

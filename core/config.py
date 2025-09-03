@@ -1,7 +1,7 @@
 import logging
 import os
 from dotenv import load_dotenv
-import pymysql
+import pymysql.cursors
 import pymysqlpool
 
 load_dotenv()

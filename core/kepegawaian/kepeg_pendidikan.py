@@ -1,6 +1,6 @@
 import pandas as pd
 from icecream import ic
-from config import get_kepegawaian_connection_pool
+from core.config import get_kepegawaian_connection_pool
 
 
 def save_pendidikan_from_emp_education(df: pd.DataFrame):

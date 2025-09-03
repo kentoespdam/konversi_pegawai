@@ -1,6 +1,5 @@
 import unittest
-from config import LOGGER
-from core.kepegawaian.gaji_tunjangan import save_gaji_tunjangan
+from core.config import LOGGER
 from core.smartoffice.sallary_allowance import (
     cleanup_sallary_allowance,
     fetch_sallary_allowance,

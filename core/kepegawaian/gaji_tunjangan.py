@@ -1,6 +1,6 @@
 import pandas as pd
 
-from config import LOGGER, get_kepegawaian_connection_pool
+from core.config import LOGGER, get_kepegawaian_connection_pool
 
 
 def save_gaji_tunjangan(df: pd.DataFrame):

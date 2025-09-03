@@ -1,5 +1,6 @@
-from config import get_smartoffice_connection_pool
+from core.config import get_smartoffice_connection_pool
 from core.enums import EmpWorkStatus
+
 
 def fetch_emp_skill_for_keahlian():
     query = """
@@ -23,7 +24,8 @@ def fetch_emp_skill_for_keahlian():
             cursor.execute(query)
             return cursor.fetchall()
 
-def fetch_data_for_keahlian(id: int = None):
+
+def fetch_data_for_keahlian(_id: int = None):
     query = """
         SELECT
             ep.emp_identity_number AS biodataId,
@@ -43,10 +45,10 @@ def fetch_data_for_keahlian(id: int = None):
         WHERE
             em.emp_work_status = %s
         """
-    params = (EmpWorkStatus.KaryawanAktif.value)
-    if id is not None:
+    params = EmpWorkStatus.KaryawanAktif.value
+    if _id is not None:
         query += " AND es.id = %s"
-        params = (EmpWorkStatus.KaryawanAktif.value, id)
+        params = (EmpWorkStatus.KaryawanAktif.value, _id)
     with get_smartoffice_connection_pool() as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, params)
