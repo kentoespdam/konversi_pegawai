@@ -1,7 +1,6 @@
 import time
 
 import pandas as pd
-from icecream import ic
 
 from core.kepegawaian.kepeg_cuti_approval import save_cuti_approval
 from core.kepegawaian.kepeg_cuti_approval_chain import update_approval_chain
@@ -13,7 +12,6 @@ def main():
     start = time.time()
     df = fetch_cuti_approval()
     cleanup(df)
-    # ic(df["approver_id"].unique())
     save_cuti_approval(df)
     log_duration("Posting cuti_approval finished", start)
     start = time.time()

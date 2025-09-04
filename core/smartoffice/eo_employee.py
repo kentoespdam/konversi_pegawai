@@ -1,3 +1,5 @@
+import pandas as pd
+
 from core.config import get_smartoffice_connection_pool
 from core.enums import EmpWorkStatus
 
@@ -72,7 +74,9 @@ def fetch_employee_for_pegawai():
     with get_smartoffice_connection_pool() as conn:
         with conn.cursor() as cursor:
             cursor.execute(query)
-            return cursor.fetchall()
+            columns = [col[0] for col in cursor.description] if cursor.description else None
+            rows = cursor.fetchall()
+            return pd.DataFrame(rows, columns=columns)
 
 
 def fetch_data_for_pegawai() -> list:

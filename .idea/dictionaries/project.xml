@@ -3,14 +3,26 @@
     <words>
       <w>akademik</w>
       <w>akhir</w>
+      <w>aktif</w>
       <w>alamat</w>
+      <w>anak</w>
       <w>askes</w>
+      <w>baru</w>
       <w>belakang</w>
       <w>berakhir</w>
+      <w>beras</w>
+      <w>berhenti</w>
       <w>berikutnya</w>
+      <w>berkala</w>
       <w>berlaku</w>
+      <w>calon</w>
+      <w>capeg</w>
       <w>cuti</w>
+      <w>direkomendasikan</w>
+      <w>dirumahkan</w>
       <w>disetujui</w>
+      <w>diterima</w>
+      <w>ditolak</w>
       <w>edate</w>
       <w>gelar</w>
       <w>golongan</w>
@@ -20,12 +32,14 @@
       <w>ifnull</w>
       <w>ikatan</w>
       <w>institusi</w>
+      <w>istri</w>
       <w>jabatan</w>
       <w>jejang</w>
       <w>jenis</w>
       <w>jenjang</w>
       <w>jurusan</w>
       <w>kandung</w>
+      <w>karyawan</w>
       <w>keahlian</w>
       <w>kelamin</w>
       <w>keluar</w>
@@ -40,7 +54,11 @@
       <w>kualifikasi</w>
       <w>kuota</w>
       <w>lahir</w>
+      <w>lainnya</w>
+      <w>lamaran</w>
+      <w>lampiran</w>
       <w>lembaga</w>
+      <w>loker</w>
       <w>masuk</w>
       <w>migrasi</w>
       <w>mutasi</w>
@@ -49,20 +67,32 @@
       <w>nomor</w>
       <w>organisasi</w>
       <w>pajak</w>
+      <w>pangkat</w>
       <w>pelatihan</w>
+      <w>pemasukan</w>
       <w>pendapatan</w>
       <w>pengajuan</w>
+      <w>pengalaman</w>
       <w>pengangkatan</w>
       <w>pensiun</w>
+      <w>penyesuaian</w>
+      <w>perpanjangan</w>
+      <w>pertama</w>
+      <w>potongan</w>
       <w>pria</w>
       <w>profesi</w>
       <w>profil</w>
       <w>riwayat</w>
+      <w>saudara</w>
       <w>sederajat</w>
+      <w>seleksi</w>
       <w>selesai</w>
       <w>sertifikasi</w>
       <w>sertifikat</w>
       <w>smartoffice</w>
+      <w>stkkr</w>
+      <w>suami</w>
+      <w>tahap</w>
       <w>tahun</w>
       <w>tanggal</w>
       <w>tanggungan</w>
@@ -70,6 +100,8 @@
       <w>tempat</w>
       <w>terakhir</w>
       <w>terima</w>
+      <w>terminasi</w>
+      <w>tetap</w>
       <w>tunjangan</w>
     </words>
   </dictionary>
