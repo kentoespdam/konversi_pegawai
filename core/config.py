@@ -1,8 +1,10 @@
 import logging
 import os
-from dotenv import load_dotenv
+
+import pandas as pd
 import pymysql.cursors
 import pymysqlpool
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -58,3 +60,48 @@ def get_kepegawaian_connection_pool(autocommit: bool = False) -> pymysqlpool.Con
         autocommit=autocommit,
         **DEFAULT_KEPEGAWAIAN_DB_CONFIG,
     ).get_connection()
+
+
+def fetch_smartoffice(query: str, where: tuple = None) -> pd.DataFrame:
+    with get_smartoffice_connection_pool() as conn:
+        return _get_fetch_result(conn, query, where)
+
+
+def fetch_kepegawaian(query: str, where: tuple = None) -> pd.DataFrame:
+    with get_kepegawaian_connection_pool() as conn:
+        return _get_fetch_result(conn, query, where)
+
+
+def _get_fetch_result(conn: pymysqlpool.Connection, query: str, where: tuple = None) -> pd.DataFrame:
+    with conn.cursor() as cursor:
+        if not where is None:
+            cursor.execute(query, where)
+        else:
+            cursor.execute(query)
+        columns = [col[0] for col in cursor.description] if cursor.description else None
+        rows = cursor.fetchall()
+        return pd.DataFrame(rows, columns=columns)
+
+
+def save_update_smartoffice(query: str, data: list):
+    with get_smartoffice_connection_pool() as connection:
+        _do_save_update(connection, query, data)
+
+
+def save_update_kepegawaian(query: str, data: list):
+    with get_kepegawaian_connection_pool() as connection:
+        _do_save_update(connection, query, data)
+
+
+def _do_save_update(connection: pymysqlpool.Connection, query: str, data: list):
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute("SET FOREIGN_KEY_CHECKS=0")
+            cursor.executemany(query, data)
+            affected = cursor.rowcount
+            LOGGER.info(f"{affected} row(s) affected")
+            connection.commit()
+            cursor.execute("SET FOREIGN_KEY_CHECKS=1")
+        except Exception as e:
+            LOGGER.error(e)
+            connection.rollback()

@@ -13,7 +13,7 @@ from icecream import ic
 
 
 def main():
-    raw_pegawai_df = pd.DataFrame(fetch_data_for_pegawai())
+    raw_pegawai_df = fetch_data_for_pegawai()
     jejang_pendidikan_df = pd.DataFrame(fetch_jenjang_pendidikan())
     organisasi_df = pd.DataFrame(fetch_organisasi())
     jabatan_df = pd.DataFrame(fetch_jabatan())
@@ -37,14 +37,14 @@ def main():
         profesi_df=profesi_df,
         meta=raw_pegawai_dd
     ).compute()
-    ic(f"total time finish in {time.time()-start_time}s")
+    ic(f"total time finish in {time.time() - start_time}s")
 
     # ic(pegawai_dd["nipam"].size)
 
     start_time = time.time()
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         executor.map(kirim_pegawai, [row for _, row in pegawai_dd.iterrows()])
-    ic(f"total time finish in {time.time()-start_time}s")
+    ic(f"total time finish in {time.time() - start_time}s")
 
 
 def validate_pegawai(

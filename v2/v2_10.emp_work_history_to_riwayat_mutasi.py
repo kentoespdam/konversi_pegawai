@@ -1,7 +1,6 @@
 import time
 
 import pandas as pd
-from icecream import ic
 
 from core.kepegawaian.kepeg_golongan import fetch_all_golongan
 from core.kepegawaian.kepeg_profesi import fetch_profesi
@@ -24,7 +23,7 @@ JENIS_MUTASI_MAP: dict[int, int] = {
 def main():
     start_time = time.time()
 
-    work_history_df = pd.DataFrame(fetch_emp_work_history_for_riwayat_mutasi())
+    work_history_df = fetch_emp_work_history_for_riwayat_mutasi()
     work_history_df = cleanup(work_history_df)
     work_history_df = work_history_df[work_history_df["riwayat_sk_id"] > 0].reset_index(drop=True)
     log_duration("generating data finish in ", start_time)

@@ -1,7 +1,6 @@
 import pandas as pd
-from icecream import ic
 
-from core.config import get_kepegawaian_connection_pool
+from core.config import save_update_kepegawaian
 
 
 def save_cuti_approval(df: pd.DataFrame):
@@ -19,14 +18,12 @@ def save_cuti_approval(df: pd.DataFrame):
         row.created_at
     ) for row in df.itertuples(index=False)]
     query = """
-            INSERT INTO cuti_approval(
-                id, cuti_pegawai_id, approver_id, jabatan_id, approval_level,
-                approval_status, notes, created_by, is_deleted, version,
-                created_at)
-            VALUES (
-                %s, %s, %s, %s, %s,
-                %s, %s, %s, %s, %s,
-                %s)
+            INSERT INTO cuti_approval(id, cuti_pegawai_id, approver_id, jabatan_id, approval_level,
+                                      approval_status, notes, created_by, is_deleted, version,
+                                      created_at)
+            VALUES (%s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s,
+                    %s)
             ON DUPLICATE KEY UPDATE cuti_pegawai_id = VALUES(cuti_pegawai_id),
                                     approver_id     = VALUES(approver_id),
                                     jabatan_id      = VALUES(jabatan_id),
@@ -35,12 +32,5 @@ def save_cuti_approval(df: pd.DataFrame):
                                     notes           = VALUES(notes),
                                     created_at      = VALUES(created_at)
             """
-    with get_kepegawaian_connection_pool(autocommit=True) as connection:
-        with connection.cursor() as cursor:
-            try:
-                cursor.executemany(query, data_list)
-                ic(cursor.rowcount, "row(s) affected")
-                connection.commit()
-            except Exception as e:
-                ic(e)
-                connection.rollback()
+
+    save_update_kepegawaian(query, data_list)

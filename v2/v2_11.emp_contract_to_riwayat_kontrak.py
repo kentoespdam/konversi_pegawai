@@ -10,7 +10,7 @@ from v2.v2_helper import log_duration
 
 def main():
     start = time.time()
-    contract_df = pd.DataFrame(fetch_emp_contract_for_riwayat_kontrak())
+    contract_df = fetch_emp_contract_for_riwayat_kontrak()
     contract_df = cleanup(contract_df)
     log_duration("Generating data finished in ", start)
 
@@ -20,7 +20,7 @@ def main():
 
 
 def cleanup(df: pd.DataFrame):
-    pegawai_df = pd.DataFrame(fetch_biodata_for_riwayat_kontrak())
+    pegawai_df = fetch_biodata_for_riwayat_kontrak()
     nik_to_id = _build_pegawai_id_lookup(pegawai_df, id_col="id")
 
     # Map pegawai_id; default to 0 when not found, preserving original behavior

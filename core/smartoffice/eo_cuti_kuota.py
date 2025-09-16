@@ -1,5 +1,4 @@
-from core.config import get_smartoffice_connection_pool
-import pandas as pd
+from core.config import fetch_kepegawaian, fetch_smartoffice
 
 
 def fetch_cuti_kuota():
@@ -14,7 +13,5 @@ def fetch_cuti_kuota():
             FROM cuti_kuota AS ck
                      INNER JOIN employee AS em ON ck.emp_code = em.emp_code \
             """
-    with get_smartoffice_connection_pool() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute(query)
-            return pd.DataFrame(cursor.fetchall())
+
+    return fetch_smartoffice(query)

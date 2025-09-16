@@ -11,7 +11,7 @@ import swifter
 
 def main():
     start_time = time.time()
-    profil_gaji_df = pd.DataFrame(fetch_data_for_profil_gaji())
+    profil_gaji_df = fetch_data_for_profil_gaji()
     emp_df = pd.DataFrame(fetch_all_pegawai())
     profil_gaji_df["tmtKerja"] = profil_gaji_df["tmtKerja"].swifter.apply(
         lambda x: x.strftime('%Y-%m-%d') if x is not None else "")

@@ -11,14 +11,10 @@ from v2.v2_helper import format_date_series, log_duration
 DEFAULT_ID = 0
 
 
-
-
-
 def main() -> None:
     start_time = time.time()
     biodata_df = pd.DataFrame(fetch_data_for_biodata())
     biodata_df = transform_biodata(biodata_df)
-    LOGGER.info(f"generated rows: {biodata_df.shape[0]}")
     log_duration("generating data finish", start_time)
 
     start_time = time.time()

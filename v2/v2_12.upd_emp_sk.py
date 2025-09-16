@@ -18,16 +18,15 @@ TARGET_JENIS_SK: List[EJenisSk] = [
 ]
 
 
-# ... existing code ...
-
 def main() -> None:
     """Fetch latest SK per pegawai, normalize, split by jenis, and update per jenis."""
-    riwayat_sk = fetch_latest_sk_by_pegawai()
-    if riwayat_sk.empty:
+    df = fetch_latest_sk_by_pegawai()
+    if df.empty:
         return
-
-    riwayat_sk = normalize_sk_dates(riwayat_sk)
-    sk_by_jenis = split_by_jenis(riwayat_sk, TARGET_JENIS_SK)
+    df = df.copy()
+    df["kenaikan_berikutnya"] = format_datetime_series(df["kenaikan_berikutnya"])
+    df["tmt_berlaku"] = format_datetime_series(df["tmt_berlaku"])
+    sk_by_jenis = split_by_jenis(df, TARGET_JENIS_SK)
 
     for jenis_sk, df in sk_by_jenis.items():
         if not df.empty:
@@ -35,19 +34,6 @@ def main() -> None:
             update_sk_pegawai(df, jenis_sk)
             log_duration(f"update {jenis_sk.name} in", start)
 
-
-# ... existing code ...
-
-def normalize_sk_dates(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Normalize datetime columns to standardized string format expected downstream.
-    """
-    df["kenaikan_berikutnya"] = format_datetime_series(df["kenaikan_berikutnya"])
-    df["tmt_berlaku"] = format_datetime_series(df["tmt_berlaku"])
-    return df
-
-
-# ... existing code ...
 
 def split_by_jenis(df: pd.DataFrame, jenis_list: List[EJenisSk]) -> Dict[EJenisSk, pd.DataFrame]:
     """
@@ -60,8 +46,6 @@ def split_by_jenis(df: pd.DataFrame, jenis_list: List[EJenisSk]) -> Dict[EJenisS
         result[jenis] = df[mask].reset_index(drop=True)
     return result
 
-
-# ... existing code ...
 
 if __name__ == "__main__":
     main()

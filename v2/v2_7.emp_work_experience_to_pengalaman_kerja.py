@@ -9,7 +9,7 @@ from v2.v2_helper import log_duration, format_datetime_series
 
 def main():
     start_time = time.time()
-    work_df = pd.DataFrame(fetch_emp_work_experience_for_pengalaman_kerja())
+    work_df = fetch_emp_work_experience_for_pengalaman_kerja()
     work_df = cleanup(work_df)
     log_duration("generating data finished", start_time)
 

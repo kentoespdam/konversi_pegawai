@@ -1,9 +1,11 @@
 import time
 
+from core.kepegawaian.kepeg_gaji_pendapatan_non_pajak import save_gaji_pendapatan_non_pajak
 from core.kepegawaian.kepeg_gaji_tunjangan import save_gaji_tunjangan
 from core.kepegawaian.kepeg_parameter_setting import save_parameter_setting
 from core.kepegawaian.kepeg_potongan_tkk import cleanup_potongan_tkk, save_potongan_tkk
 from core.smartoffice.eo_salary_allowance import fetch_salary_allowance, cleanup_salary_allowance
+from core.smartoffice.eo_salary_non_taxable_income import fetch_salary_non_taxable_income
 from core.smartoffice.eo_salary_tkk_reduction import fetch_tkk_reduction
 from core.smartoffice.eo_sys_reference import fetch_maks_potongan
 from v2.v2_helper import log_duration
@@ -15,6 +17,11 @@ def main():
     master_tunjangan = cleanup_salary_allowance(master_tunjangan)
     save_gaji_tunjangan(master_tunjangan)
     log_duration("Posting gaji_tunjangan finished", start_time)
+
+    start_time=time.time()
+    df=fetch_salary_non_taxable_income()
+    save_gaji_pendapatan_non_pajak(df)
+    log_duration("Posting gaji_pendapatan_non_pajak finished", start_time)
 
     start_time = time.time()
     parameter_df = fetch_maks_potongan()

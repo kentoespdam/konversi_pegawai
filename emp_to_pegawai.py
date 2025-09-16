@@ -37,7 +37,6 @@ def validate_pegawai(pegawai_list: pd.DataFrame):
 
 if __name__ == "__main__":
     pegawai_list = fetch_data_for_pegawai()
-    pegawai_list = pd.DataFrame(pegawai_list)
     pegawai_list["pendidikanTerakhirId"] = 0
     pegawai_list["organisasiId"] = 0
     pegawai_list["jabatanId"] = 0

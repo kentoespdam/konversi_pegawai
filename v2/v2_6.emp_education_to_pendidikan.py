@@ -12,10 +12,10 @@ DEFAULT_JENJANG_ID = 0
 
 def main():
     start_time = time.time()
-    edu_df = pd.DataFrame(fetch_emp_education_for_pendidikan())
+    edu_df = fetch_emp_education_for_pendidikan()
     edu_df = cleanup(edu_df)
     log_duration("generating data finished", start_time)
-    # ... existing code ...
+
     start_time = time.time()
     save_pendidikan_from_emp_education(edu_df)
     log_duration("posting data finished", start_time)
@@ -38,6 +38,7 @@ def cleanup(df: pd.DataFrame):
     df["is_deleted"] = df["is_deleted"].eq(1)
     df["gpa"] = df["gpa"].map(str_to_float).astype(float)
     return df
+
 
 if __name__ == "__main__":
     main()

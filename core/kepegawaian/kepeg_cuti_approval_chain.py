@@ -1,7 +1,6 @@
 import pandas as pd
-from icecream import ic
 
-from core.config import get_kepegawaian_connection_pool
+from core.config import save_update_kepegawaian
 
 
 def save_approval_chain(df: pd.DataFrame):
@@ -26,15 +25,7 @@ def save_approval_chain(df: pd.DataFrame):
                                     approval_status   = VALUES(approval_status),
                                     read_write_status = VALUES(read_write_status) \
             """
-    with get_kepegawaian_connection_pool(autocommit=True) as connection:
-        with connection.cursor() as cursor:
-            try:
-                cursor.executemany(query, data_list)
-                ic(cursor.rowcount, "row(s) affected")
-                connection.commit()
-            except Exception as e:
-                ic(e)
-                connection.rollback()
+    save_update_kepegawaian(query, data_list)
 
 
 def update_approval_chain(df: pd.DataFrame):
@@ -49,12 +40,4 @@ def update_approval_chain(df: pd.DataFrame):
             WHERE ref_cuti_id = %s
               AND jabatan_id = %s
             """
-    with get_kepegawaian_connection_pool(autocommit=True) as connection:
-        with connection.cursor() as cursor:
-            try:
-                cursor.executemany(query, data_list)
-                ic(cursor.rowcount, "row(s) affected")
-                connection.commit()
-            except Exception as e:
-                ic(e)
-                connection.rollback()
+    save_update_kepegawaian(query, data_list)

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/fcdc0752-d919-46cf-a92a-de2b1826efbc/console.sql" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/jenis_kartu.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_biodata.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_cuti_approval.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_cuti_approval_chain.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_cuti_klaim_detail.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_cuti_kuota.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_cuti_pegawai.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_gaji_pendapatan_non_pajak.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_kartu_identitas.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_keahlian.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_pegawai.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_pelatihan.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_pendidikan.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_pengalaman_kerja.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_profil_keluarga.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_riwayat_kontrak.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_riwayat_mutasi.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_riwayat_sk.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_sk.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/emp_card.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/emp_contract.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/emp_education.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/emp_family.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/emp_sk.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/emp_skill.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/emp_training.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/emp_work_experience.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/emp_work_history.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/eo_cuti_approval.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/eo_cuti_aproval_chain.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/eo_cuti_kuota.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/eo_cuti_pegawai.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/eo_cuti_pegawai_detail.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/eo_employee.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+    <file url="file://$PROJECT_DIR$/core/smartoffice/eo_salary_non_taxable_income.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
+  </component>
+</project>

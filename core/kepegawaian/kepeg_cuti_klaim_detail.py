@@ -1,7 +1,6 @@
 import pandas as pd
-from icecream import ic
 
-from core.config import get_kepegawaian_connection_pool
+from core.config import save_update_kepegawaian
 
 
 def save_cuti_klaim_detail(df: pd.DataFrame):
@@ -12,16 +11,8 @@ def save_cuti_klaim_detail(df: pd.DataFrame):
     ) for row in df.itertuples(index=False)]
 
     query = """
-        INSERT INTO cuti_klaim_detail (id, tanggal, ref_cuti_id)
-        VALUES (%s, %s, %s)
-    """
+            INSERT INTO cuti_klaim_detail (id, tanggal, ref_cuti_id)
+            VALUES (%s, %s, %s) \
+            """
 
-    with get_kepegawaian_connection_pool() as connection:
-        with connection.cursor() as cursor:
-            try:
-                cursor.executemany(query, data_list)
-                ic(cursor.rowcount, "row(s) affected")
-                connection.commit()
-            except Exception as e:
-                ic(e)
-                connection.rollback()
+    save_update_kepegawaian(query, data_list)

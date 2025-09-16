@@ -1,7 +1,6 @@
 import pandas as pd
-from icecream import ic
 
-from core.config import get_kepegawaian_connection_pool
+from core.config import save_update_kepegawaian
 
 
 def save_riwayat_mutasi_from_emp_work_history(df: pd.DataFrame):
@@ -33,27 +32,18 @@ def save_riwayat_mutasi_from_emp_work_history(df: pd.DataFrame):
         'SYSTEM'
     ) for row in df.itertuples(index=False)]
     query = """
-        INSERT INTO riwayat_mutasi (
-            pegawai_id, nipam, nama, riwayat_sk_id, tmt_berlaku, 
-            tanggal_berakhir, jenis_mutasi, organisasi_id, nama_organisasi, jabatan_id, 
-            nama_jabatan, profesi_id, nama_profesi, golongan_id, nama_golongan, 
-            organisasi_lama_id, nama_organisasi_lama, jabatan_lama_id, nama_jabatan_lama, profesi_lama_id, 
-            nama_profesi_lama, is_deleted, notes, version, created_by
-        ) VALUES (
-            %s, %s, %s, %s, %s, 
-            %s, %s, %s, %s, %s, 
-            %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s
-        )
-    """
-    with get_kepegawaian_connection_pool(autocommit=True) as connection:
-        with connection.cursor() as cursor:
-            try:
-                cursor.executemany(query, data)
-                affected = cursor.rowcount
-                ic(affected, "row(s) affected")
-                connection.commit()
-            except Exception as e:
-                ic(e)
-                connection.rollback()
+            INSERT INTO riwayat_mutasi (pegawai_id, nipam, nama, riwayat_sk_id, tmt_berlaku,
+                                        tanggal_berakhir, jenis_mutasi, organisasi_id, nama_organisasi, jabatan_id,
+                                        nama_jabatan, profesi_id, nama_profesi, golongan_id, nama_golongan,
+                                        organisasi_lama_id, nama_organisasi_lama, jabatan_lama_id, nama_jabatan_lama,
+                                        profesi_lama_id,
+                                        nama_profesi_lama, is_deleted, notes, version, created_by)
+            VALUES (%s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE pegawai_id=VALUES(pegawai_id) \
+            """
+
+    save_update_kepegawaian(query, data)

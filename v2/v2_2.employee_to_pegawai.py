@@ -53,7 +53,7 @@ def cleanup(df: pd.DataFrame):
     for col in DATE_COLUMNS:
         df[col] = format_date_series(df[col])
 
-    df["is_askes"] = df["is_askes"].eq(1)
+    df["is_askes"] = df["is_askes"].eq('1')
     df["is_deleted"] = df["is_deleted"].eq(1)
     return df
 
@@ -93,7 +93,7 @@ def _cleanup_grade_id(df: pd.DataFrame, profesi_df: pd.DataFrame):
 
 def cleanup_pendapatan_non_pajak(df: pd.DataFrame):
     df = df.copy()
-    pnp = pd.DataFrame(fetch_all_gaji_pendapatan_non_pajak())
+    pnp = fetch_all_gaji_pendapatan_non_pajak()
     pnp_map = pnp.set_index("kode")["id"].to_dict()
     return df["emp_tax_code"].map(pnp_map).fillna(0).astype(int)
 

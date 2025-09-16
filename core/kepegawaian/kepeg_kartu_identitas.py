@@ -1,18 +1,19 @@
 import pandas as pd
-from icecream import ic
-from core.config import get_kepegawaian_connection_pool
+
+from core.config import save_update_kepegawaian
 
 
 def save_kartu_identitas_from_emp_profile(df: pd.DataFrame):
-    list = [(row.nik, row.nik, 'SYSTEM') for row in df.itertuples(index=False)]
+    data = [(row.nik, row.nik, 'SYSTEM') for row in df.itertuples(index=False)]
 
-    query = "INSERT INTO kartu_identitas (nomor_kartu, nik, created_by, jenis_kitas_id) VALUES (%s, %s, %s, 1)"
-    with get_kepegawaian_connection_pool(autocommit=True) as connection:
-        with connection.cursor() as cursor:
-            cursor.executemany(query, list)
-            affected = cursor.rowcount
-            ic(affected, "row(s) affected")
-            connection.commit()
+    query = """INSERT INTO kartu_identitas (nomor_kartu, nik, created_by, jenis_kitas_id)
+               VALUES (%s, %s, %s, 1)
+               ON DUPLICATE KEY UPDATE nomor_kartu=VALUES(nomor_kartu),
+                                       nik=VALUES(nik),
+                                       created_by=VALUES(created_by),
+                                       jenis_kitas_id=VALUES(jenis_kitas_id) \
+            """
+    save_update_kepegawaian(query, data)
 
 
 def save_kartu_identitas_from_emp_card(df: pd.DataFrame):
@@ -29,25 +30,16 @@ def save_kartu_identitas_from_emp_card(df: pd.DataFrame):
     ) for row in df.itertuples(index=False)]
 
     query = """
-        INSERT INTO kartu_identitas (
-            nik, jenis_kitas_id, nomor_kartu, tanggal_expired, tanggal_terima, 
-            notes, is_deleted, version, created_by
-        ) VALUES (
-            %s, %s, %s, %s, %s, 
-            %s, %s, %s, %s
-        ) ON DUPLICATE KEY UPDATE 
-            nik=VALUES(nik),
-            jenis_kitas_id=VALUES(jenis_kitas_id),
-            nomor_kartu=VALUES(nomor_kartu),
-            tanggal_expired=VALUES(tanggal_expired),
-            tanggal_terima=VALUES(tanggal_terima),
-            notes=VALUES(notes),
-            is_deleted=VALUES(is_deleted)
-    """
-
-    with get_kepegawaian_connection_pool() as connection:
-        with connection.cursor() as cursor:
-            cursor.executemany(query, data)
-            affected = cursor.rowcount
-            ic(affected, "row(s) affected")
-            connection.commit()
+            INSERT INTO kartu_identitas (nik, jenis_kitas_id, nomor_kartu, tanggal_expired, tanggal_terima,
+                                         notes, is_deleted, version, created_by)
+            VALUES (%s, %s, %s, %s, %s,
+                    %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE nik=VALUES(nik),
+                                    jenis_kitas_id=VALUES(jenis_kitas_id),
+                                    nomor_kartu=VALUES(nomor_kartu),
+                                    tanggal_expired=VALUES(tanggal_expired),
+                                    tanggal_terima=VALUES(tanggal_terima),
+                                    notes=VALUES(notes),
+                                    is_deleted=VALUES(is_deleted) \
+            """
+    save_update_kepegawaian(query, data)

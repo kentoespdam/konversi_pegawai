@@ -1,82 +1,62 @@
-import icecream
 import pandas as pd
-from icecream import ic
 
-from core.config import get_kepegawaian_connection_pool
+from core.config import save_update_kepegawaian, fetch_kepegawaian
 from core.enums import EJenisSk
 
 
-def update_pegawai_phdp(salary_rows: list) -> None:
-    """Update PHDP and rumah dinas ID in pegawai table."""
+def update_pegawai_phdp(df: pd.DataFrame):
+    data_list = [(row.gajiProfilId, row.phdp, row.rumahDinasId if row.rumahDinasId > 0 else None, row.nipam) for row in
+                 df.itertuples(index=False)]
+    query = """
+            UPDATE pegawai
+            SET gaji_profil_id = %s,
+                phdp           =COALESCE(%s, 0),
+                rumah_dinas_id =COALESCE(%s, NULL)
+            WHERE nipam = %s
+            """
 
-    query = """UPDATE pegawai SET
-               gaji_profil_id=%s,
-               phdp=%s,
-               rumah_dinas_id=%s
-               WHERE nipam=%s
-    """
-    data = [
-        (row["gajiProfilId"],
-         row["phdp"] or 0,
-         row["rumahDinasId"] if row["rumahDinasId"] > 0 else None,
-         row["nipam"])
-        for row in salary_rows
-    ]
-    try:
-        with get_kepegawaian_connection_pool(autocommit=True) as connection:
-            with connection.cursor() as cursor:
-                cursor.executemany(query, data)
-                affected = cursor.rowcount
-                icecream.ic(affected, "row(s) affected")
-    except Exception as e:
-        raise e
+    save_update_kepegawaian(query, data_list)
 
 
 def fetch_all_pegawai():
     query = """
-        SELECT
-            pegawai.id,
-            pegawai.absensi_id,
-            pegawai.gaji_pokok,
-            pegawai.is_askes,
-            pegawai.jml_tanggungan,
-            pegawai.mkg_bulan,
-            pegawai.mkg_tahun,
-            pegawai.nipam,
-            pegawai.notes,
-            pegawai.phdp,
-            pegawai.ref_sk_capeg_id,
-            pegawai.ref_sk_gol_id,
-            pegawai.ref_sk_jabatan_id,
-            pegawai.ref_sk_mutasi_id,
-            pegawai.ref_sk_pegawai_id,
-            pegawai.status_kerja,
-            pegawai.status_pegawai,
-            pegawai.tmt_golongan,
-            pegawai.tmt_jabatan,
-            pegawai.tmt_kerja,
-            pegawai.tmt_mutasi,
-            pegawai.tmt_pegawai,
-            pegawai.tmt_pensiun,
-            pegawai.nik,
-            pegawai.gaji_profil_id,
-            pegawai.golongan_id,
-            pegawai.grade_id,
-            pegawai.jabatan_id,
-            pegawai.gaji_pendapatan_non_pajak_id,
-            pegawai.organisasi_id,
-            pegawai.profesi_id,
-            pegawai.rumah_dinas_id
-        FROM
-            pegawai
-        WHERE
-            pegawai.is_deleted = FALSE
-        """
-
-    with get_kepegawaian_connection_pool() as connection:
-        with connection.cursor() as cursor:
-            cursor.execute(query)
-            return cursor.fetchall()
+            SELECT pegawai.id,
+                   pegawai.absensi_id,
+                   pegawai.gaji_pokok,
+                   pegawai.is_askes,
+                   pegawai.jml_tanggungan,
+                   pegawai.mkg_bulan,
+                   pegawai.mkg_tahun,
+                   pegawai.nipam,
+                   pegawai.notes,
+                   pegawai.phdp,
+                   pegawai.ref_sk_capeg_id,
+                   pegawai.ref_sk_gol_id,
+                   pegawai.ref_sk_jabatan_id,
+                   pegawai.ref_sk_mutasi_id,
+                   pegawai.ref_sk_pegawai_id,
+                   pegawai.status_kerja,
+                   pegawai.status_pegawai,
+                   pegawai.tmt_golongan,
+                   pegawai.tmt_jabatan,
+                   pegawai.tmt_kerja,
+                   pegawai.tmt_mutasi,
+                   pegawai.tmt_pegawai,
+                   pegawai.tmt_pensiun,
+                   pegawai.nik,
+                   pegawai.gaji_profil_id,
+                   pegawai.golongan_id,
+                   pegawai.grade_id,
+                   pegawai.jabatan_id,
+                   pegawai.gaji_pendapatan_non_pajak_id,
+                   pegawai.organisasi_id,
+                   pegawai.profesi_id,
+                   pegawai.rumah_dinas_id
+            FROM pegawai
+            WHERE pegawai.is_deleted = FALSE \
+            """
+    params = (False,)
+    return fetch_kepegawaian(query, params)
 
 
 def save_pegawai_from_employee(df: pd.DataFrame):
@@ -112,33 +92,21 @@ def save_pegawai_from_employee(df: pd.DataFrame):
     ) for row in df.itertuples(index=False)]
 
     query = """
-        REPLACE INTO pegawai (
-            id, nipam, nik, status_pegawai, organisasi_id,
-            jabatan_id, profesi_id, golongan_id, grade_id, status_kerja,
-            tmt_mutasi, tmt_jabatan, tmt_golongan, tmt_kerja, tanggal_pengangkatan,
-            tmt_pensiun, gaji_profil_id, gaji_pendapatan_non_pajak_id, rumah_dinas_id, gaji_pokok,
-            is_askes, phdp, jml_tanggungan, mkg_tahun, mkg_bulan,
-            notes, version, created_by
-        ) VALUES (
-            %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s,
-            %s, %s, %s
-        )
-    """
+            REPLACE INTO pegawai (id, nipam, nik, status_pegawai, organisasi_id,
+                                  jabatan_id, profesi_id, golongan_id, grade_id, status_kerja,
+                                  tmt_mutasi, tmt_jabatan, tmt_golongan, tmt_kerja, tanggal_pengangkatan,
+                                  tmt_pensiun, gaji_profil_id, gaji_pendapatan_non_pajak_id, rumah_dinas_id, gaji_pokok,
+                                  is_askes, phdp, jml_tanggungan, mkg_tahun, mkg_bulan,
+                                  notes, version, created_by)
+            VALUES (%s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s,
+                    %s, %s, %s) \
+            """
 
-    try:
-        with get_kepegawaian_connection_pool(autocommit=True) as connection:
-            with connection.cursor() as cursor:
-                cursor.executemany(query, data)
-                affected = cursor.rowcount
-                icecream.ic(affected, "row(s) affected")
-                connection.commit()
-    except Exception as e:
-        ic(e)
-        raise e
+    save_update_kepegawaian(query, data)
 
 
 def update_sk_pegawai(df: pd.DataFrame, jenis_sk: EJenisSk):
@@ -152,16 +120,7 @@ def update_sk_pegawai(df: pd.DataFrame, jenis_sk: EJenisSk):
     if query is None:
         return
 
-    with get_kepegawaian_connection_pool(autocommit=True) as connection:
-        with connection.cursor() as cursor:
-            try:
-                cursor.executemany(query, data)
-                affected = cursor.rowcount
-                ic(affected, "row(s) affected")
-                connection.commit()
-            except Exception as e:
-                ic(e)
-                connection.rollback()
+    save_update_kepegawaian(query, data)
 
 
 def _generate_query_sk_capeg(jenis_sk: EJenisSk):

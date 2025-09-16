@@ -2,22 +2,21 @@ import time
 
 import pandas as pd
 
-from core.config import LOGGER
 from core.kepegawaian.jenis_kartu import fetch_all_jenis_kartu
 from core.kepegawaian.kepeg_kartu_identitas import save_kartu_identitas_from_emp_card
 from core.smartoffice.emp_card import fetch_emp_card_for_kartu_identitas
-from v2.v2_helper import format_date_series
+from v2.v2_helper import format_date_series, log_duration
 
 
 def main():
     start_time = time.time()
-    kartu_identitas_df = pd.DataFrame(fetch_emp_card_for_kartu_identitas())
+    kartu_identitas_df = fetch_emp_card_for_kartu_identitas()
     kartu_identitas_df = cleanup(kartu_identitas_df)
-    LOGGER.info(f"generating data finish in {time.time() - start_time}s")
+    log_duration("generating data", start_time)
 
     start_time = time.time()
     save_kartu_identitas_from_emp_card(kartu_identitas_df)
-    LOGGER.info(f"posting data finish in {time.time() - start_time}s")
+    log_duration("saving data", start_time)
 
 
 def cleanup(df: pd.DataFrame):

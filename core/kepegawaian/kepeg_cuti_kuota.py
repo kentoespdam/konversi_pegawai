@@ -1,11 +1,10 @@
 import pandas as pd
-from icecream import ic
 
-from core.config import get_kepegawaian_connection_pool
+from core.config import save_update_kepegawaian
 
 
 def save_cuti_kuota(df: pd.DataFrame):
-    data_list=[(
+    data_list = [(
         row.id,
         row.pegawai_id,
         row.tahun,
@@ -31,9 +30,5 @@ def save_cuti_kuota(df: pd.DataFrame):
                                     expired=VALUES(expired),
                                     is_deleted=VALUES(is_deleted)
             """
-    with get_kepegawaian_connection_pool(autocommit=True) as connection:
-        with connection.cursor() as cursor:
-            cursor.executemany(query, data_list)
-            affected = cursor.rowcount
-            ic(affected, "row(s) affected")
-            connection.commit()
+
+    save_update_kepegawaian(query, data_list)

@@ -1,55 +1,44 @@
-from core.config import get_smartoffice_connection_pool
+from core.config import fetch_smartoffice
 
 
 def fetch_emp_contract_for_riwayat_kontrak():
     query = """
-        SELECT
-            ec.ec_id AS id,
-            ep.emp_identity_number AS nik,
-            ec.emp_code AS nipam,
-            ep.emp_name AS nama,
-            em.emp_work_status AS status_kerja,
-            0 AS jenis_kontrak,
-            ec.contract_no AS nomor_kontrak,
-            ec.contract_start_date AS tanggal_sk,
-            ec.contract_start_date AS tanggal_mulai,
-            ec.contract_exp_date AS tanggal_selesai,
-            em.emp_pos_id AS jabatan_id,
-            pos.pos_org_id AS organisasi_id,
-            ec.ec_description AS notes,
-            IF( ec.ec_status = 3, TRUE, FALSE ) AS is_deleted 
-        FROM
-            emp_contract AS ec
-            INNER JOIN employee AS em ON ec.emp_code = em.emp_code
-            INNER JOIN emp_profile AS ep ON em.emp_profile_id = ep.emp_profile_id
-            INNER JOIN position AS pos ON em.emp_pos_id = pos.pos_id
-    """
-    with get_smartoffice_connection_pool() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute(query)
-            return cursor.fetchall()
+            SELECT ec.ec_id                          AS id,
+                   ep.emp_identity_number            AS nik,
+                   ec.emp_code                       AS nipam,
+                   ep.emp_name                       AS nama,
+                   em.emp_work_status                AS status_kerja,
+                   0                                 AS jenis_kontrak,
+                   ec.contract_no                    AS nomor_kontrak,
+                   ec.contract_start_date            AS tanggal_sk,
+                   ec.contract_start_date            AS tanggal_mulai,
+                   ec.contract_exp_date              AS tanggal_selesai,
+                   em.emp_pos_id                     AS jabatan_id,
+                   pos.pos_org_id                    AS organisasi_id,
+                   ec.ec_description                 AS notes,
+                   IF(ec.ec_status = 3, TRUE, FALSE) AS is_deleted
+            FROM emp_contract AS ec
+                     INNER JOIN employee AS em ON ec.emp_code = em.emp_code
+                     INNER JOIN emp_profile AS ep ON em.emp_profile_id = ep.emp_profile_id
+                     INNER JOIN position AS pos ON em.emp_pos_id = pos.pos_id \
+            """
+    return fetch_smartoffice(query)
 
 
 def fetch_data_for_riwayat_kontrak():
     query = """
-        SELECT
-            em.emp_code AS nipam,
-            ep.emp_name AS nama,
-            ec.contract_no AS nomor_kontrak,
-            ec.contract_received_date AS tanggal_sk,
-            ec.contract_start_date AS tanggal_mulai,
-            ec.contract_exp_date AS tanggal_selesai,
-            ec.ec_description AS notes,
-            ep.emp_identity_number 
-        FROM
-            emp_contract AS ec
-            INNER JOIN employee AS em ON ec.emp_code = em.emp_code
-            INNER JOIN emp_profile AS ep ON em.emp_profile_id = ep.emp_profile_id 
-        WHERE
-            ep.emp_identity_number != NULL 
-            OR ep.emp_identity_number != ''
-        """
-    with get_smartoffice_connection_pool() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute(query)
-            return cursor.fetchall()
+            SELECT em.emp_code               AS nipam,
+                   ep.emp_name               AS nama,
+                   ec.contract_no            AS nomor_kontrak,
+                   ec.contract_received_date AS tanggal_sk,
+                   ec.contract_start_date    AS tanggal_mulai,
+                   ec.contract_exp_date      AS tanggal_selesai,
+                   ec.ec_description         AS notes,
+                   ep.emp_identity_number
+            FROM emp_contract AS ec
+                     INNER JOIN employee AS em ON ec.emp_code = em.emp_code
+                     INNER JOIN emp_profile AS ep ON em.emp_profile_id = ep.emp_profile_id
+            WHERE ep.emp_identity_number IS NOT NULL
+               OR ep.emp_identity_number != '' \
+            """
+    return fetch_smartoffice(query)

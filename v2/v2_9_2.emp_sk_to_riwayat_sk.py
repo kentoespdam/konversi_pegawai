@@ -10,7 +10,7 @@ from v2.v2_helper import log_duration
 def main():
     start_time = time.time()
     update_init_smartoffice_no_sk()
-    sk_df = pd.DataFrame(fetch_emp_sk_for_riwayat_sk())
+    sk_df = fetch_emp_sk_for_riwayat_sk()
     sk_df = cleanup(sk_df)
     log_duration("generating data finish in ", start_time)
 
@@ -20,6 +20,7 @@ def main():
 
 
 def cleanup(df: pd.DataFrame):
+    df = df.copy()
     df["update_master"] = df["update_master"].eq(1)
     df["is_deleted"] = df["is_deleted"].eq(1)
     return df

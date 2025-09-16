@@ -11,7 +11,7 @@ CORE_RELATION_IDS = {0, 1, 2, 3}  # domain: inti keluarga
 
 def main() -> None:
     start = time.perf_counter()
-    family_df = pd.DataFrame(fetch_emp_family_for_profil_keluarga())
+    family_df = fetch_emp_family_for_profil_keluarga()
     family_df = transform_family_df(family_df)
     log_duration("generating data finish", start)
 

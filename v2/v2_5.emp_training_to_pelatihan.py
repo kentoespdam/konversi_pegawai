@@ -2,21 +2,20 @@ import time
 
 import pandas as pd
 
-from core.config import LOGGER
 from core.kepegawaian.kepeg_pelatihan import save_pelatihan_from_emp_training
 from core.smartoffice.emp_training import fetch_emp_training_for_pelatihan
-from v2.v2_helper import format_date_series, format_datetime_series
+from v2.v2_helper import format_date_series, format_datetime_series, log_duration
 
 
 def main():
     start_time = time.time()
-    training_df = pd.DataFrame(fetch_emp_training_for_pelatihan())
+    training_df = fetch_emp_training_for_pelatihan()
     training_df = cleanup(training_df)
-    LOGGER.info(f"generating data finish in {time.time() - start_time}s")
+    log_duration("generating data", start_time)
 
     start_time = time.time()
     save_pelatihan_from_emp_training(training_df)
-    LOGGER.info(f"posting data finish in {time.time() - start_time}s")
+    log_duration("posting data", start_time)
 
 
 def cleanup(df: pd.DataFrame):

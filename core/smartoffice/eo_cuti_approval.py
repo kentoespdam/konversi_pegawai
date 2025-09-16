@@ -1,6 +1,4 @@
-import pandas as pd
-
-from core.config import get_smartoffice_connection_pool
+from core.config import fetch_smartoffice
 
 
 def fetch_cuti_approval():
@@ -17,7 +15,5 @@ def fetch_cuti_approval():
                      INNER JOIN employee AS em ON cpa.cpa_emp_code = em.emp_code
                      INNER JOIN cuti_pegawai AS cp ON cpa.cp_id = cp.cp_id
             """
-    with get_smartoffice_connection_pool() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute(query)
-            return pd.DataFrame(cursor.fetchall())
+
+    return fetch_smartoffice(query)

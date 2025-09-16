@@ -1,6 +1,6 @@
 import pandas as pd
-from core.config import get_kepegawaian_connection_pool
-from icecream import ic
+
+from core.config import save_update_kepegawaian
 
 
 def save_cuti_pegawai(df: pd.DataFrame):
@@ -39,19 +39,19 @@ def save_cuti_pegawai(df: pd.DataFrame):
         0
     ) for row in df.itertuples(index=False)]
     sql = """
-          INSERT INTO cuti_pegawai (id, pegawai_id, nipam, nama, pangkat_golongan, 
-                                    organisasi_id, jabatan_id, jenis_pengajuan_cuti, ref_cuti_id, jenis_cuti_id, 
-                                    sub_jenis_cuti_id, tanggal_mulai, tanggal_selesai, jumlah_hari, jumlah_hari_kerja, 
-                                    kuota_awal, kuota_akhir, alasan, approval_cuti_status, approval_level, 
-                                    pic_saat_ini_id, riwayat_kuota0, riwayat_kuota1, riwayat_pakai0, riwayat_pakai1, 
-                                    riwayat_sisa0, riwayat_sisa1, is_claimed, is_deleted, created_at, 
+          INSERT INTO cuti_pegawai (id, pegawai_id, nipam, nama, pangkat_golongan,
+                                    organisasi_id, jabatan_id, jenis_pengajuan_cuti, ref_cuti_id, jenis_cuti_id,
+                                    sub_jenis_cuti_id, tanggal_mulai, tanggal_selesai, jumlah_hari, jumlah_hari_kerja,
+                                    kuota_awal, kuota_akhir, alasan, approval_cuti_status, approval_level,
+                                    pic_saat_ini_id, riwayat_kuota0, riwayat_kuota1, riwayat_pakai0, riwayat_pakai1,
+                                    riwayat_sisa0, riwayat_sisa1, is_claimed, is_deleted, created_at,
                                     created_by, version)
-          VALUES (%s, %s, %s, %s, %s, 
-                  %s, %s, %s, %s, %s, 
-                  %s, %s, %s, %s, %s, 
-                  %s, %s, %s, %s, %s, 
-                  %s, %s, %s, %s, %s, 
-                  %s, %s, %s, %s, %s, 
+          VALUES (%s, %s, %s, %s, %s,
+                  %s, %s, %s, %s, %s,
+                  %s, %s, %s, %s, %s,
+                  %s, %s, %s, %s, %s,
+                  %s, %s, %s, %s, %s,
+                  %s, %s, %s, %s, %s,
                   %s, %s)
           ON DUPLICATE KEY UPDATE pegawai_id=VALUES(pegawai_id),
                                   nipam=VALUES(nipam),
@@ -85,13 +85,5 @@ def save_cuti_pegawai(df: pd.DataFrame):
                                   created_by=VALUES(created_by),
                                   version=VALUES(version)
           """
-    try:
-        with get_kepegawaian_connection_pool() as conn:
-            with conn.cursor() as cursor:
-                cursor.executemany(sql, data_list)
-                ic(cursor.rowcount, "row(s) affected")
-                conn.commit()
-    except Exception as e:
-        ic(e)
-        conn.rollback()
-        # raise e
+
+    save_update_kepegawaian(sql, data_list)
