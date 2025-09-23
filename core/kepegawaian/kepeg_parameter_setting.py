@@ -12,10 +12,10 @@ def save_parameter_setting(df: pd.DataFrame):
         0
     ) for row in df.itertuples(index=False)]
     query = """
-        INSERT INTO gaji_parameter_setting (kode, nominal, created_by, version) 
-        VALUES (%s, %s, %s, %s)
-        ON DUPLICATE KEY UPDATE nominal=VALUES(nominal)
-    """
+            INSERT INTO gaji_parameter_setting (kode, nominal, created_by, version)
+            VALUES (%s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE nominal=VALUES(nominal) \
+            """
     with get_kepegawaian_connection_pool() as conn:
         with conn.cursor() as cursor:
             try:

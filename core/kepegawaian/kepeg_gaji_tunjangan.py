@@ -18,16 +18,14 @@ def save_gaji_tunjangan(df: pd.DataFrame):
         for row in df.itertuples(index=False)
     ]
     sql = """
-        INSERT INTO gaji_tunjangan 
-            (id, jenis_tunjangan, level_id, golongan_id, nominal, created_by, version) 
-        VALUES 
-            (%s, %s, %s, %s, %s, %s, %s) 
-        ON DUPLICATE KEY UPDATE 
-            jenis_tunjangan=VALUES(jenis_tunjangan), 
-            level_id=VALUES(level_id), 
-            golongan_id=VALUES(golongan_id), 
-            nominal=VALUES(nominal)
-        """
+          INSERT INTO gaji_tunjangan
+          (id, jenis_tunjangan, level_id, golongan_id, nominal, created_by, version)
+          VALUES (%s, %s, %s, %s, %s, %s, %s)
+          ON DUPLICATE KEY UPDATE jenis_tunjangan=VALUES(jenis_tunjangan),
+                                  level_id=VALUES(level_id),
+                                  golongan_id=VALUES(golongan_id),
+                                  nominal=VALUES(nominal) \
+          """
 
     with get_kepegawaian_connection_pool() as conn:
         with conn.cursor() as cursor:

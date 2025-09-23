@@ -1,50 +1,24 @@
-import pymysql
-from core.config import DEFAULT_KEPEGAWAIAN_DB_CONFIG, get_kepegawaian_connection_pool
-from icecream import ic
+import pandas as pd
+
+from core.config import save_update_kepegawaian
 
 
-def fetch_organisasi():
+def update_organisasi_from_organization(df: pd.DataFrame):
+    data = [(
+        row.org_name,
+        row.mail_code,
+        row.category,
+        row.is_deleted,
+        row.org_id
+    ) for row in df.itertuples(index=False)]
+
     query = """
-        SELECT
-            org.id, 
-            org.kode, 
-            org.parent_id, 
-            org.level_org, 
-            org.nama, 
-            org.short_name
-        FROM
-            organisasi AS org
-        """
-    with get_kepegawaian_connection_pool() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute(query)
-            return cursor.fetchall()
+            UPDATE organisasi
+            SET nama=%s,
+                short_name=%s,
+                category=%s,
+                is_deleted=%s
+            WHERE id = %s \
+            """
 
-
-def fetch_organisasi_id(organisasi_name: str) -> int:
-    """
-    Fetch the ID of an organisasi from the database.
-
-    Args:
-        organisasi_name (str): The name of the organisasi.
-
-    Returns:
-        int: The ID of the organisasi.
-    """
-
-    if organisasi_name is None:
-        return 0
-
-    if organisasi_name == "BAG. PERENCANAAN & PENGEMBANGAN":
-        return 31
-
-    connection = pymysql.connect(**DEFAULT_KEPEGAWAIAN_DB_CONFIG)
-    with connection.cursor() as cursor:
-        query = "SELECT id FROM organisasi WHERE nama = %(organisasi_name)s"
-        params = {"organisasi_name": organisasi_name}
-        cursor.execute(query, params)
-        result = cursor.fetchone()
-        if result is None:
-            ic(cursor.mogrify(query, params))
-
-    return result["id"] if result else 0
+    save_update_kepegawaian(query, data)

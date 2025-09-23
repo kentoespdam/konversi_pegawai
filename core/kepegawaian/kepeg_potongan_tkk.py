@@ -21,10 +21,10 @@ def save_potongan_tkk(data: pd.DataFrame):
     ) for row in data.itertuples()]
 
     query = """
-        INSERT INTO gaji_potongan_tkk(id, status_pegawai, golongan_id, level_id, nominal, created_by, version)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        ON DUPLICATE KEY UPDATE nominal=VALUES(nominal)
-    """
+            INSERT INTO gaji_potongan_tkk(id, status_pegawai, golongan_id, level_id, nominal, created_by, version)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE nominal=VALUES(nominal) \
+            """
 
     with get_kepegawaian_connection_pool() as conn:
         with conn.cursor() as cursor:
