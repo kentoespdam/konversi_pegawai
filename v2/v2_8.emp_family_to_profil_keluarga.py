@@ -2,11 +2,14 @@ import time
 
 import pandas as pd
 
+from core.enums import EHubunganKeluarga
 from core.kepegawaian.kepeg_profil_keluarga import save_profil_keluarga_from_emp_profile
 from core.smartoffice.emp_family import fetch_emp_family_for_profil_keluarga
 from v2.v2_helper import format_date_series, log_duration
 
-CORE_RELATION_IDS = {0, 1, 2, 3}  # domain: inti keluarga
+CORE_RELATION_IDS = {EHubunganKeluarga.SUAMI.value, EHubunganKeluarga.ISTRI.value, EHubunganKeluarga.AYAH.value,
+                     EHubunganKeluarga.IBU.value, EHubunganKeluarga.ANAK.value,
+                     EHubunganKeluarga.SAUDARA.value}  # domain: inti keluarga
 
 
 def main() -> None:

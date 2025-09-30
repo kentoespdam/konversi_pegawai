@@ -21,7 +21,7 @@ def fetch_emp_family_for_profil_keluarga():
                      LEFT JOIN sys_reference AS rh ON ef.fam_relation = rh.`value`
                 AND rh.`code` = %s \
             """
-    params = ("hubungan_keluarga",)
+    params = ("hub_keluarga",)
     return fetch_smartoffice(query, params)
 
 
