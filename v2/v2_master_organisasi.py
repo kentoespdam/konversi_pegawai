@@ -21,7 +21,7 @@ def main():
 
 def _cleanup(df: pd.DataFrame):
     df = df.copy()
-    df["is_deleted"] = df["org_status"].eq("Enabled")
+    df["is_deleted"] = df["org_status"].ne("Enabled")
     return df[["org_id", "org_name", "mail_code", "category", "is_deleted"]]
 
 
