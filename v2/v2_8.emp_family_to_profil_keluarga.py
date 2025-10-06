@@ -8,8 +8,7 @@ from core.smartoffice.emp_family import fetch_emp_family_for_profil_keluarga
 from v2.v2_helper import format_date_series, log_duration
 
 CORE_RELATION_IDS = {EHubunganKeluarga.SUAMI.value, EHubunganKeluarga.ISTRI.value, EHubunganKeluarga.AYAH.value,
-                     EHubunganKeluarga.IBU.value, EHubunganKeluarga.ANAK.value,
-                     EHubunganKeluarga.SAUDARA.value}  # domain: inti keluarga
+                     EHubunganKeluarga.IBU.value}  # domain: inti keluarga
 
 
 def main() -> None:
@@ -24,6 +23,7 @@ def main() -> None:
 
 
 def transform_family_df(df: pd.DataFrame) -> pd.DataFrame:
+    result_df = df.copy()
     """
     Normalize and enrich family dataframe to match profil_keluarga schema expectations.
     - tanggal_lahir formatted as YYYY-MM-DD (None preserved)
@@ -31,58 +31,67 @@ def transform_family_df(df: pd.DataFrame) -> pd.DataFrame:
     - status_pendidikan and status_kawin normalized via rules
     - agama defaulted to 1
     """
-    df["tanggal_lahir"] = format_date_series(df["tanggal_lahir"])
+    result_df["tanggal_lahir"] = format_date_series(result_df["tanggal_lahir"])
 
     # tanggungan: 1 -> True, others -> False
-    df["tanggungan"] = df["tanggungan"].eq(1)
-
-    # row-wise normalizations depending on multiple columns
-    df["status_pendidikan"] = df.apply(
-        lambda x: _cleanup_status_pendidikan(
-            x["status_pendidikan"], x["hubungan_keluarga"], x["tanggungan"]
-        ),
-        axis=1,
-    )
-    df["status_kawin"] = df.apply(
-        lambda x: _cleanup_status_kawin(
-            x["hubungan_keluarga"], x["tanggungan"], x["status_kawin"]
-        ),
-        axis=1,
-    )
+    result_df["tanggungan"] = result_df["tanggungan"].eq(1)
 
     # default constant
-    df["agama"] = 1
-    return df
+    result_df["agama"] = 1
+
+    # Vectorized status_pendidikan cleanup
+    result_df["status_pendidikan"] = _cleanup_status_pendidikan_vectorized(
+        result_df["status_pendidikan"],
+        result_df["hubungan_keluarga"],
+        result_df["umur"]
+    )
+
+    # Vectorized status_kawin cleanup
+    result_df["status_kawin"] = _cleanup_status_kawin_vectorized(
+        result_df["status_kawin"],
+        result_df["hubungan_keluarga"]
+    )
+
+    return result_df
 
 
-def _cleanup_status_pendidikan(status_pendidikan: int, hubungan_keluarga: int, tanggungan: bool) -> int:
+def _cleanup_status_pendidikan_vectorized(
+        status_pendidikan: pd.Series,
+        hubungan_keluarga: pd.Series,
+        umur: pd.Series
+) -> pd.Series:
     """
-    Normalize pendidikan status when it's invalid (< 0).
-    - For hubungan_keluarga in {0, 1} => 2
-    - Else => 1 if tanggungan else 2
+    Vectorized version of status_pendidikan normalization.
     """
-    if status_pendidikan < 0:
-        if hubungan_keluarga in (0, 1):
-            return 2
-        return 1 if tanggungan else 2
-    return status_pendidikan
+    # Create result series with original values
+    result = status_pendidikan.copy()
+    mask_core = hubungan_keluarga.isin([0, 1, 2, 3])
+    result.loc[mask_core] = 2
+    mask_invalid = status_pendidikan.eq(-1)
+    mask_umur = umur.le(7)
+    result.loc[mask_invalid & mask_umur & ~mask_core] = 0
+    result.loc[mask_invalid & ~mask_umur & ~mask_core] = 1
+    result.loc[umur.gt(25) & hubungan_keluarga.eq(4)] = 2
+
+    return result
 
 
-def _cleanup_status_kawin(hubungan_keluarga: int, tanggungan: bool, status_kawin: int) -> int:
+def _cleanup_status_kawin_vectorized(
+        status_kawin: pd.Series,
+        hubungan_keluarga: pd.Series,
+) -> pd.Series:
     """
-    Normalize kawin status.
-    - Core relations {0,1,2,3} => 1
-    - If tanggungan => 0
-    - If hubungan_keluarga == 4 and status_kawin == 2 => 0
-    - Otherwise keep original status_kawin
+    Vectorized version of status_kawin normalization.
     """
-    if hubungan_keluarga in CORE_RELATION_IDS:
-        return 1
-    if tanggungan:
-        return 0
-    if hubungan_keluarga == 4 and status_kawin == 2:
-        return 0
-    return status_kawin
+    # Create result series with original values
+    result = status_kawin.copy()
+    mask = hubungan_keluarga.isin(CORE_RELATION_IDS)
+    result.loc[mask] = 1
+    mask_anak = hubungan_keluarga.eq(4)
+    result.loc[~mask & mask_anak & status_kawin.eq(-1)] = 0
+    result.loc[status_kawin.eq(-1)] = 1
+
+    return result
 
 
 if __name__ == "__main__":
