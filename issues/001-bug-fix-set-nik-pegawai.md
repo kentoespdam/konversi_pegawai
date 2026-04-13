@@ -84,7 +84,7 @@ Meskipun ini bukan SQL injection ke database, penggunaan f-string di dalam `Data
 
 ### Tahap 1: Persiapan
 
-1. Buat branch baru dari branch `v2`, misalnya `fix/set-nik-pegawai`.
+1. Buat branch baru dari branch `BUG-FIX-OPTIMIZE-V2`, misalnya `fix/set-nik-pegawai`.
 2. Pastikan environment sudah aktif (`source .venv/bin/activate`).
 3. Jalankan test yang ada untuk memastikan kondisi awal: `python -m pytest tests/`.
 

@@ -19,8 +19,8 @@ pip install -r requirements.txt
 python main_v2.py
 
 # Run a specific migration step
-python -m v2.v2_1.emp_profile_to_biodata
-python -m v2.v2_2.employee_to_pegawai
+python -m v2.v2_1_emp_profile_to_biodata
+python -m v2.v2_2_employee_to_pegawai
 # ... through v2_17
 
 # Run employee-to-pegawai conversion with Dask parallel processing

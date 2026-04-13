@@ -116,24 +116,24 @@ source .venv/bin/activate
 python main_v2.py
 
 # 2. Jalankan migrasi satu per satu
-python -m v2.v2_1.emp_profile_to_biodata
-python -m v2.v2_2.employee_to_pegawai
-python -m v2.v2_3.emp_card_to_kartu_identitas
-python -m v2.v2_4.emp_skill_to_keahlian
-python -m v2.v2_5.emp_training_to_pelatihan
-python -m v2.v2_6.emp_education_to_pendidikan
-python -m v2.v2_7.emp_work_experience_to_pengalaman_kerja
-python -m v2.v2_8.emp_family_to_profil_keluarga
-python -m v2.v2_9_1.init_emp_sk_from_riwayat_sk_optional
-python -m v2.v2_9_2.emp_sk_to_riwayat_sk
-python -m v2.v2_10.emp_work_history_to_riwayat_mutasi
-python -m v2.v2_11.emp_contract_to_riwayat_kontrak
-python -m v2.v2_12.upd_emp_sk
-python -m v2.v2_13.cuti_kuota
-python -m v2.v2_14.cuti_pegawai
-python -m v2.v2_15.cuti_approval_chain
-python -m v2.v2_16.cuti_approval
-python -m v2.v2_17.cuti_klaim_detail
+python -m v2.v2_1_emp_profile_to_biodata
+python -m v2.v2_2_employee_to_pegawai
+python -m v2.v2_3_emp_card_to_kartu_identitas
+python -m v2.v2_4_emp_skill_to_keahlian
+python -m v2.v2_5_emp_training_to_pelatihan
+python -m v2.v2_6_emp_education_to_pendidikan
+python -m v2.v2_7_emp_work_experience_to_pengalaman_kerja
+python -m v2.v2_8_emp_family_to_profil_keluarga
+python -m v2.v2_9_1_init_emp_sk_from_riwayat_sk_optional
+python -m v2.v2_9_2_emp_sk_to_riwayat_sk
+python -m v2.v2_10_emp_work_history_to_riwayat_mutasi
+python -m v2.v2_11_emp_contract_to_riwayat_kontrak
+python -m v2.v2_12_upd_emp_sk
+python -m v2.v2_13_cuti_kuota
+python -m v2.v2_14_cuti_pegawai
+python -m v2.v2_15_cuti_approval_chain
+python -m v2.v2_16_cuti_approval
+python -m v2.v2_17_cuti_klaim_detail
 
 # 3. Master data
 python -m v2.v2_master_gaji

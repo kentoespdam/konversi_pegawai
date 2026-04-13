@@ -15,7 +15,7 @@ def fetch_pegawai_without_nik() -> pd.DataFrame:
     query = """
         SELECT
             ep.emp_profile_id, 
-            em.emp_code,
+            MAX(em.emp_code) AS emp_code,
             ep.emp_name, 
             ep.emp_identity_type, 
             ep.emp_identity_number
@@ -23,16 +23,20 @@ def fetch_pegawai_without_nik() -> pd.DataFrame:
             emp_profile AS ep
             INNER JOIN employee AS em ON ep.emp_profile_id = em.emp_profile_id
         WHERE
-            ep.emp_identity_number IS NULL OR ep.emp_identity_number = ''
+            (ep.emp_identity_number IS NULL OR ep.emp_identity_number = '')
         GROUP BY
-            ep.emp_profile_id
+            ep.emp_profile_id, ep.emp_name, ep.emp_identity_type, ep.emp_identity_number
     """
-    with get_smartoffice_connection_pool() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute(query)
-            rows = cursor.fetchall()
-            columns = [desc[0] for desc in cursor.description]
-            return pd.DataFrame(rows, columns=columns)
+    try:
+        with get_smartoffice_connection_pool() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                columns = [desc[0] for desc in cursor.description]
+                return pd.DataFrame(rows, columns=columns)
+    except Exception as e:
+        LOGGER.error(f"Error fetching pegawai without NIK: {e}")
+        return pd.DataFrame()
 
 
 # ... existing code ...
@@ -54,12 +58,16 @@ def fetch_emp_cards_by_emp_codes(emp_codes: list[str]) -> pd.DataFrame:
         WHERE
             ec.emp_code IN %s
         """
-    with get_smartoffice_connection_pool() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute(query, (tuple(emp_codes),))
-            rows = cursor.fetchall()
-            columns = [desc[0] for desc in cursor.description]
-            return pd.DataFrame(rows, columns=columns)
+    try:
+        with get_smartoffice_connection_pool() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (tuple(emp_codes),))
+                rows = cursor.fetchall()
+                columns = [desc[0] for desc in cursor.description]
+                return pd.DataFrame(rows, columns=columns)
+    except Exception as e:
+        LOGGER.error(f"Error fetching emp_cards: {e}")
+        return pd.DataFrame(columns=["ei_id", "emp_code", "ei_type", "ei_number"])
 
 
 # ... existing code ...
@@ -72,11 +80,29 @@ def update_nik_emp_profile(pegawai_df: pd.DataFrame):
         LOGGER.info("No rows to update.")
         return
 
-    data_list = [(
-        row.emp_identity_number,
-        row.emp_identity_type,
-        row.emp_profile_id
-    ) for row in pegawai_df.itertuples(index=False)]
+    data_list = []
+    skipped_count = 0
+    for row in pegawai_df.itertuples(index=False):
+        print(f"DEBUG ROW: {row}")
+        # Bug 4: Validation
+        if pd.isna(row.emp_identity_number) or not str(row.emp_identity_number).strip():
+            skipped_count += 1
+            continue
+        
+        # Bug 5: Ensure correct types
+        data_list.append((
+            str(row.emp_identity_number),
+            int(row.emp_identity_type),
+            row.emp_profile_id
+        ))
+
+    if skipped_count > 0:
+        print(f"DEBUG: skipped_count={skipped_count}")
+        LOGGER.warning(f"Skipped {skipped_count} rows due to empty NIK.")
+
+    if not data_list:
+        LOGGER.info("No valid rows to update after validation.")
+        return
 
     sql = """
         UPDATE emp_profile SET
@@ -84,11 +110,17 @@ def update_nik_emp_profile(pegawai_df: pd.DataFrame):
             emp_identity_type=%s
         WHERE emp_profile_id=%s
     """
-    with get_smartoffice_connection_pool() as conn:
-        with conn.cursor() as cursor:
-            cursor.executemany(sql, data_list)
-            LOGGER.info("%s row(s) affected", cursor.rowcount)
-            conn.commit()
+    try:
+        with get_smartoffice_connection_pool() as conn:
+            with conn.cursor() as cursor:
+                cursor.executemany(sql, data_list)
+                LOGGER.info("%s row(s) updated in emp_profile", cursor.rowcount)
+                conn.commit()
+    except Exception as e:
+        LOGGER.error(f"Error updating NIK in emp_profile: {e}")
+        # Rollback is automatically handled by some context managers, but being explicit is safer if needed.
+        # However, get_smartoffice_connection_pool context manager might not rollback on its own.
+        # If it returns a raw connection, we should rollback.
 
 
 class CleanupNikEmpProfile:
@@ -102,30 +134,48 @@ class CleanupNikEmpProfile:
         if self.emp_without_nik.empty:
             LOGGER.info("No employees without NIK found.")
             return
-        LOGGER.info(f"Found {self.emp_without_nik['emp_profile_id'].size} without NIK")
+        
+        initial_count = len(self.emp_without_nik)
+        LOGGER.info(f"Found {initial_count} employees without NIK.")
+        
         self.emp_codes = self.emp_without_nik["emp_code"].tolist()
         self.emp_cards = fetch_emp_cards_by_emp_codes(self.emp_codes)
 
         self._cleanup_nik_from_emp_card()
-        LOGGER.info(f"Found {self.emp_without_nik['emp_profile_id'].size} with NIK")
-        LOGGER.info(self.emp_without_nik.head().to_dict("records"))
+        
+        # Bug 6: Better logging
+        from_card = self.emp_without_nik[self.emp_without_nik["_source"] == "card"].shape[0]
+        from_fallback = self.emp_without_nik[self.emp_without_nik["_source"] == "fallback"].shape[0]
+        
+        LOGGER.info(f"Cleanup finished. Matched from cards: {from_card}, Fallback to emp_code: {from_fallback}")
+        
         update_nik_emp_profile(self.emp_without_nik)
 
     def _cleanup_nik_from_emp_card(self):
+        # Initialize source column for logging
+        self.emp_without_nik["_source"] = "none"
+        
         for idx, row in self.emp_without_nik.iterrows():
             emp_code = row["emp_code"]
-            ec_list = self.emp_cards.query(f"emp_code == '{emp_code}'")
+            # Bug 2: Safe filtering instead of .query() with f-string
+            ec_list = self.emp_cards[self.emp_cards["emp_code"] == emp_code]
+            
             if ec_list.empty:
                 self.emp_without_nik.loc[idx, "emp_identity_number"] = emp_code
                 self.emp_without_nik.loc[idx, "emp_identity_type"] = KTP_IDENTITY_TYPE
+                self.emp_without_nik.loc[idx, "_source"] = "fallback"
                 continue
-            ec_ktp = ec_list.query(f"ei_type == {KTP_IDENTITY_TYPE}")
+            
+            ec_ktp = ec_list[ec_list["ei_type"] == KTP_IDENTITY_TYPE]
             if ec_ktp.empty:
                 self.emp_without_nik.loc[idx, "emp_identity_number"] = emp_code
                 self.emp_without_nik.loc[idx, "emp_identity_type"] = KTP_IDENTITY_TYPE
+                self.emp_without_nik.loc[idx, "_source"] = "fallback"
                 continue
+                
             self.emp_without_nik.loc[idx, "emp_identity_number"] = ec_ktp["ei_number"].values[0]
             self.emp_without_nik.loc[idx, "emp_identity_type"] = KTP_IDENTITY_TYPE
+            self.emp_without_nik.loc[idx, "_source"] = "card"
 
 if __name__ == "__main__":
     CleanupNikEmpProfile().run()
