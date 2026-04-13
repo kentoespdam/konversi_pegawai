@@ -12,8 +12,7 @@ def fetch_emp_skill_for_keahlian():
                    es.tahun,
                    es.entry_date                                   AS tanggal_pengajuan,
                    es.approve_date                                 AS tanggal_disetujui,
-                   IF
-                   (es.`status` = 3, TRUE, FALSE)                  AS is_deleted
+                   es.`status`                                     AS status_raw
             FROM emp_skill AS es
                      INNER JOIN emp_profile AS ep ON es.emp_profile_id = ep.emp_profile_id \
             """
