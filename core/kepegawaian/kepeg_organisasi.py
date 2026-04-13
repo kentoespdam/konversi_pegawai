@@ -1,9 +1,17 @@
 import pandas as pd
 
-from core.config import save_update_kepegawaian
+from core.config import get_kepegawaian_connection_pool, save_update_kepegawaian
 
 
-def update_organisasi_from_organization(df: pd.DataFrame):
+def fetch_organisasi():
+    query = """
+            SELECT id, nama FROM organisasi
+            """
+    with get_kepegawaian_connection_pool() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
+
     data = [(
         row.org_name,
         row.mail_code,

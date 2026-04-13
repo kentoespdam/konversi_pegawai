@@ -87,7 +87,6 @@ def save_pegawai_from_employee(df: pd.DataFrame):
         row.mkg_tahun,
         row.mkg_bulan,
         row.notes,
-        0,
         'SYSTEM'
     ) for row in df.itertuples(index=False)]
 
@@ -97,13 +96,13 @@ def save_pegawai_from_employee(df: pd.DataFrame):
                                   tmt_mutasi, tmt_jabatan, tmt_golongan, tmt_kerja, tanggal_pengangkatan,
                                   tmt_pensiun, gaji_profil_id, gaji_pendapatan_non_pajak_id, rumah_dinas_id, gaji_pokok,
                                   is_askes, phdp, jml_tanggungan, mkg_tahun, mkg_bulan,
-                                  notes, version, created_by)
+                                  notes, created_by)
             VALUES (%s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
-                    %s, %s, %s) \
+                    %s, %s) \
             """
 
     save_update_kepegawaian(query, data)

@@ -23,19 +23,17 @@ def save_gaji_pendapatan_non_pajak(df: pd.DataFrame):
         row.nominal,
         '',
         row.is_deleted,
-        'SYSTEM',
-        0
+        'SYSTEM'
     ) for row in df.itertuples()]
 
     query = """
-            INSERT INTO gaji_pendapatan_non_pajak (id, kode, nominal, notes, is_deleted, created_by, version)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO gaji_pendapatan_non_pajak (id, kode, nominal, notes, is_deleted, created_by)
+            VALUES (%s, %s, %s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE kode=VALUES(kode),
-                                    nominal=VALUES(nominal),
-                                    notes=VALUES(notes),
-                                    is_deleted=VALUES(is_deleted),
-                                    created_by=VALUES(created_by),
-                                    version=VALUES(version) \
+                                     nominal=VALUES(nominal),
+                                     notes=VALUES(notes),
+                                     is_deleted=VALUES(is_deleted),
+                                     created_by=VALUES(created_by) \
             """
     with get_kepegawaian_connection_pool() as conn:
         with conn.cursor() as cursor:
