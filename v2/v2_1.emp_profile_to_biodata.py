@@ -12,15 +12,24 @@ DEFAULT_ID = 0
 
 
 def main() -> None:
-    start_time = time.time()
-    biodata_df = pd.DataFrame(fetch_data_for_biodata())
-    biodata_df = transform_biodata(biodata_df)
-    log_duration("generating data finish", start_time)
+    try:
+        start_time = time.time()
+        raw_data = fetch_data_for_biodata()
+        if not raw_data:
+            LOGGER.info("No data found in emp_profile. Skipping migration.")
+            return
 
-    start_time = time.time()
-    save_biodata_from_emp_profile(biodata_df)
-    save_kartu_identitas_from_emp_profile(biodata_df)
-    log_duration("posting data finish", start_time)
+        biodata_df = pd.DataFrame(raw_data)
+        biodata_df = transform_biodata(biodata_df)
+        log_duration("generating data finish", start_time)
+
+        start_time = time.time()
+        save_biodata_from_emp_profile(biodata_df)
+        save_kartu_identitas_from_emp_profile(biodata_df)
+        log_duration("posting data finish", start_time)
+    except Exception as e:
+        LOGGER.error(f"Error during emp_profile to biodata migration: {str(e)}")
+        raise
 
 
 def transform_biodata(df: pd.DataFrame) -> pd.DataFrame:
@@ -35,24 +44,15 @@ def transform_biodata(df: pd.DataFrame) -> pd.DataFrame:
     # Dates
     df["tanggal_lahir"] = format_date_series(df["tanggal_lahir"])
 
-    # Pendidikan mapping
-    df["pendidikan_id"] = df["pendidikanTerakhir"].apply(
-        lambda x: get_jenjang_pendidikan_id(x, jenjang_pendidikan_df)
-    )
+    # Pendidikan mapping (Optimized Bug 4)
+    pendidikan_map = dict(zip(jenjang_pendidikan_df["nama"], jenjang_pendidikan_df["id"]))
+    df["pendidikan_id"] = df["pendidikanTerakhir"].map(pendidikan_map).fillna(DEFAULT_ID).astype(int)
 
-    # Booleans
-    df["is_deleted"] = df["is_deleted"].eq(1)
-    df["is_pegawai"] = df["emp_flag"].ne(0)
+    # Booleans & NULL handling (Bug 3 & 6)
+    df["is_deleted"] = df["is_deleted"].fillna(0).astype(int)
+    df["is_pegawai"] = df["emp_flag"].fillna(0).ne(0).astype(int)
 
     return df
-
-
-def get_jenjang_pendidikan_id(pendidikan_terakhir: str, jenjang_pendidikan_df: pd.DataFrame) -> int:
-    """Resolve pendidikanTerakhir string to its master jenjang_pendidikan id, or DEFAULT_ID if not found."""
-    if pendidikan_terakhir is None or pendidikan_terakhir == "":
-        return DEFAULT_ID
-    result = jenjang_pendidikan_df.query("nama == @pendidikan_terakhir").reset_index(drop=True)
-    return int(result["id"].values[0]) if not result.empty else DEFAULT_ID
 
 
 if __name__ == "__main__":
