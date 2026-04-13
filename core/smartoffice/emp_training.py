@@ -15,7 +15,6 @@ def fetch_emp_training_for_pelatihan():
                    et.ikatan_dinas,
                    et.tgl_akhir_ikatan              AS tanggal_akhir_ikatan,
                    et.keterangan                    AS notes,
-                   TRUE                             AS disetujui,
                    et.entry_date                    AS tanggal_pengajuan,
                    et.approve_date                  AS tanggal_disetujui,
                    et.approve_by                    AS disetujui_oleh,
