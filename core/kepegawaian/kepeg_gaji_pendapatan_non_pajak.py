@@ -17,14 +17,17 @@ def fetch_all_gaji_pendapatan_non_pajak():
 
 
 def save_gaji_pendapatan_non_pajak(df: pd.DataFrame):
+    if df.empty:
+        return
+
     data_list = [(
         row.id,
         row.kode,
         row.nominal,
-        '',
+        row.notes if hasattr(row, 'notes') and row.notes else '',
         row.is_deleted,
         'SYSTEM'
-    ) for row in df.itertuples()]
+    ) for row in df.itertuples(index=False)]
 
     query = """
             INSERT INTO gaji_pendapatan_non_pajak (id, kode, nominal, notes, is_deleted, created_by)
@@ -33,14 +36,14 @@ def save_gaji_pendapatan_non_pajak(df: pd.DataFrame):
                                      nominal=VALUES(nominal),
                                      notes=VALUES(notes),
                                      is_deleted=VALUES(is_deleted),
-                                     created_by=VALUES(created_by) \
+                                     updated_at=CURRENT_TIMESTAMP
             """
     with get_kepegawaian_connection_pool() as conn:
         with conn.cursor() as cursor:
             try:
                 cursor.executemany(query, data_list)
-                LOGGER.info(f"{cursor.rowcount} rows affected")
+                LOGGER.info(f"gaji_pendapatan_non_pajak: {cursor.rowcount} rows affected")
                 conn.commit()
             except Exception as e:
-                LOGGER.error(e)
+                LOGGER.error(f"Error saving gaji_pendapatan_non_pajak: {e}")
                 conn.rollback()

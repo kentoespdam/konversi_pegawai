@@ -47,7 +47,11 @@ def cleanup_salary_allowance(df: pd.DataFrame) -> pd.DataFrame:
             "nominal": int,
         },
     )
-    return ddf.compute()
+    df = ddf.compute()
+
+    # Sanitization
+    df = df.replace({np.nan: None, pd.NaT: None, pd.NA: None})
+    return df
 
 
 # ... existing code ...
