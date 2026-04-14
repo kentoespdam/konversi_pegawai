@@ -17,12 +17,13 @@ type: project
 - v2_9_1 emp_sk (init) & v2_9_2 riwayat_sk — plan/issue docs created, **code implemented and optimized** (resolved sql errors, missing columns, idempotency, boolean logic fixes)
 - v2_10 emp_work_history_to_riwayat_mutasi — plan/issue doc created (`issues/v2_10_emp_work_history_to_riwayat_mutasi_plan.md`). **Code fix NOT YET implemented.**
 - v2_11 emp_contract_to_riwayat_kontrak — plan/issue doc created (`issues/v2_11_emp_contract_to_riwayat_kontrak_plan.md`). **Code fix NOT YET implemented.**
+- v2_14 cuti_pegawai — plan/issue doc created (`issues/v2_14_cuti_pegawai_plan.md`), **code implemented and optimized** (fixed database schema mismatch, added CURRENT_TIMESTAMP trigger, NaN/NaT sanitization, error handling)
 
 **Open issues:**
 - `issues/001-bug-review-v2_1-emp-profile-to-biodata.md` — review/fix bugs in v2_1 biodata conversion
 - `issues/v2_10_emp_work_history_to_riwayat_mutasi_plan.md` — code fix pending
 - `issues/v2_11_emp_contract_to_riwayat_kontrak_plan.md` — code fix pending
-- Migration scripts v2_12 through v2_17 not yet audited
+- Migration scripts v2_12, v2_13, v2_15 through v2_17 not yet audited
 
 **Working tree:** clean (as of 2026-04-14)
 

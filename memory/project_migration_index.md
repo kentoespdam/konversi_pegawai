@@ -5,9 +5,9 @@ type: project
 ---
 
 ## Status Optimasi
-- **Sudah dioptimasi**: v2_1, v2_2, v2_3, v2_4, v2_5, v2_6, v2_7, v2_8, v2_9_1, v2_9_2
+- **Sudah dioptimasi**: v2_1, v2_2, v2_3, v2_4, v2_5, v2_6, v2_7, v2_8, v2_9_1, v2_9_2, v2_14
 - **Issue dibuat, belum diimplementasi**: v2_10, v2_11
-- **Belum diaudit**: v2_12 sampai v2_17
+- **Belum diaudit**: v2_12, v2_13, v2_15, v2_16, v2_17
 
 ## Index Per Script
 
@@ -93,9 +93,9 @@ type: project
 ### v2_13: cuti_kuota
 - Minimal: fetch → format expired date → save. Target: `cuti_kuota`
 
-### v2_14: cuti_pegawai
-- **Transform**: is_claimed logic (approved claims set), tanggal_mulai/selesai→format_date(default_date=True)
-- Target: `cuti_pegawai`
+### v2_14: cuti_pegawai *(sudah dioptimasi)*
+- **Transform**: is_claimed logic (approved claims set), tanggal_mulai/selesai→format_date(default_date=True), NaN/NaT sanitization
+- **Target**: `cuti_pegawai` (version logic removed, added error handling & CURRENT_TIMESTAMP update)
 
 ### v2_15: cuti_approval_chain
 - Minimal: fetch → save (no cleanup). Target: `cuti_approval_chain`
