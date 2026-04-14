@@ -18,17 +18,16 @@ def save_riwayat_kontrak_from_emp_contract(df: pd.DataFrame):
         row.is_latest,
         row.notes,
         row.is_deleted,
-        0,
         'SYSTEM'
     ) for row in df.itertuples(index=False)]
 
     query = """
             INSERT INTO riwayat_kontrak (jenis_kontrak, pegawai_id, nipam, nama, nomor_kontrak,
                                          tanggal_sk, tanggal_mulai, tanggal_selesai, organisasi_id, jabatan_id,
-                                         is_latest, notes, is_deleted, version, created_by)
+                                         is_latest, notes, is_deleted, created_by)
             VALUES (%s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s)
+                    %s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE jenis_kontrak   = VALUES(jenis_kontrak),
                                     pegawai_id      = VALUES(pegawai_id),
                                     nipam           = VALUES(nipam),
@@ -42,8 +41,8 @@ def save_riwayat_kontrak_from_emp_contract(df: pd.DataFrame):
                                     is_latest       = VALUES(is_latest),
                                     notes           = VALUES(notes),
                                     is_deleted      = VALUES(is_deleted),
-                                    version         = version + 1,
-                                    created_by      = VALUES(created_by) \
+                                    created_by      = VALUES(created_by),
+                                    updated_at      = CURRENT_TIMESTAMP \
             """
 
     save_update_kepegawaian(query, data)

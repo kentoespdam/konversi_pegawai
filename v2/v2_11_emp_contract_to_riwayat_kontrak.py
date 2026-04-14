@@ -1,22 +1,39 @@
 import time
+import traceback
 
+import numpy as np
 import pandas as pd
 
+from core.config import LOGGER
 from core.kepegawaian.kepeg_biodata import fetch_biodata_for_riwayat_kontrak
 from core.kepegawaian.kepeg_riwayat_kontrak import save_riwayat_kontrak_from_emp_contract
-from core.smartoffice.emp_contract import fetch_emp_contract_for_riwayat_kontrak
+from core.smartoffice.emp_contract import fetch_emp_contract_for_riwayat_kontrak, fetch_smartoffice
 from v2.v2_helper import log_duration
 
 
 def main():
-    start = time.time()
-    contract_df = fetch_emp_contract_for_riwayat_kontrak()
-    contract_df = cleanup(contract_df)
-    log_duration("Generating data finished in ", start)
+    try:
+        start_time = time.time()
+        contract_df = fetch_emp_contract_for_riwayat_kontrak()
+        if contract_df.empty:
+            LOGGER.info("No data found. Skipping.")
+            return
 
-    start = time.time()
-    save_riwayat_kontrak_from_emp_contract(contract_df)
-    log_duration("Posting data finished in ", start)
+        # Orphan detection (Optional but recommended in plan)
+        total_src = fetch_smartoffice("SELECT COUNT(*) AS total FROM emp_contract", {}).iloc[0]["total"]
+        orphans = total_src - len(contract_df)
+        LOGGER.info(f"Fetched {len(contract_df)} records. ({orphans} orphans skipped)")
+
+        contract_df = cleanup(contract_df)
+        log_duration("Generating data finished in ", start_time)
+
+        start_time = time.time()
+        save_riwayat_kontrak_from_emp_contract(contract_df)
+        LOGGER.info(f"Successfully processed {len(contract_df)} records.")
+        log_duration("Posting data finished in ", start_time)
+    except Exception as e:
+        LOGGER.error(f"Migration v2_11 failed: {e}")
+        traceback.print_exc()
 
 
 def cleanup(df: pd.DataFrame):
@@ -43,13 +60,16 @@ def cleanup(df: pd.DataFrame):
     # Derive jenis_kontrak with vectorized conditions:
     # - default 0
     # - 1 when nipam does not start with "KO-"
-    # - 2 when is_latest and status_kerja == 8 (takes precedence)
+    # - 2 when is_latest and status_kerja == 8 (TERMINASI)
     df["jenis_kontrak"] = 0
     # nipam may be null; treat null as not starting with "KO-"
     nipam = df.get("nipam")
     not_ko = nipam.fillna("").astype(str).str.startswith("KO-").map(lambda v: not v)
     df.loc[not_ko, "jenis_kontrak"] = 1
     df.loc[df["is_latest"] & (df["status_kerja"] == 8), "jenis_kontrak"] = 2
+
+    # NaN sanitization (LAST STEP)
+    df = df.replace({np.nan: None, pd.NaT: None, pd.NA: None})
 
     return df
 
@@ -69,15 +89,6 @@ def _build_pegawai_id_lookup(pegawai_df: pd.DataFrame, id_col: str = "id") -> pd
     dedup = tmp.drop_duplicates(subset="nik", keep="first")
     mapping = dedup.set_index("nik")[id_col]
     return mapping
-
-
-def _get_pegawai_id(df: pd.DataFrame, nik: str, col: str = "id"):
-    mask = df["nik"] == nik
-    result = df[mask].reset_index(drop=True)
-    result_size = result["nik"].size
-    if result_size > 1:
-        result = result[result["status_kerja"] == 2].reset_index(drop=True)
-    return result.iloc[0][col] if not result.empty else 0 if col == "id" else None
 
 
 if __name__ == "__main__":

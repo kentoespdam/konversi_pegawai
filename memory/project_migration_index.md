@@ -5,9 +5,9 @@ type: project
 ---
 
 ## Status Optimasi
-- **Sudah dioptimasi**: v2_1, v2_2, v2_3, v2_4, v2_5, v2_6, v2_7
-- **Issue dibuat, belum diimplementasi**: v2_8
-- **Belum diaudit**: v2_9 sampai v2_17
+- **Sudah dioptimasi**: v2_1, v2_2, v2_3, v2_4, v2_5, v2_6, v2_7, v2_8, v2_9_1, v2_9_2
+- **Issue dibuat, belum diimplementasi**: v2_10, v2_11
+- **Belum diaudit**: v2_12 sampai v2_17
 
 ## Index Per Script
 
@@ -58,31 +58,31 @@ type: project
 - **Target**: `pengalaman_kerja` via `save_pengalaman_kerja_from_emp_work_experience()` — TRUNCATE + INSERT (idempotency)
 - **Transform** (`cleanup`): tanggal_pengajuan/disetujui→format_datetime, is_deleted→eq(1), tahun_masuk/keluar→replace(0,None), NaN/NaT sanitization, error handling, record logging
 
-### v2_8: emp_family → profil_keluarga *(issue dibuat, belum diimplementasi)*
+### v2_8: emp_family → profil_keluarga *(sudah dioptimasi)*
 - **Fetch**: `core/smartoffice/emp_family.py::fetch_emp_family_for_profil_keluarga()`
 - **Source**: `emp_family` INNER JOIN `emp_profile`, LEFT JOIN `sys_reference`(code='hub_keluarga')
 - **Target**: `profil_keluarga` via `save_profil_keluarga_from_emp_profile()`
 - **Transform** (`transform_family_df`): tanggal_lahir→format_date, tanggungan→eq(1), agama→default 1, status_pendidikan→vectorized masks (hubungan+umur), status_kawin→vectorized masks (hubungan), menggunakan `EHubunganKeluarga` enum
 - **Issue doc**: `issues/v2_8_emp_family_to_profil_keluarga_plan.md` — 12 bugs: version column mismatch, nik/pendidikan_id tidak diisi, idempotency rusak (no unique key), masking status_kawin order bug, potential negative values dari -1 offset, no empty check, no error handling, no record logging, NaN/NaT tidak disanitasi
 
-### v2_9_1: emp_work_history → emp_sk (init)
+### v2_9_1: emp_work_history → emp_sk (init) *(sudah dioptimasi)*
 - **Fetch**: `emp_work_history` LEFT JOIN `emp_sk`(subquery), INNER JOIN `employee` — hanya NEW records (esk_no_sk IS NULL)
 - **Target**: `emp_sk` (INSERT ke **source DB** smartoffice) via `save_emp_sk_from_emp_work_history()`
 - **Transform** (`cleanup_init`): ref_id→default 0, status→default 1, notes→np.where conditional "Init Smartoffice"
 
-### v2_9_2: emp_sk → riwayat_sk
+### v2_9_2: emp_sk → riwayat_sk *(sudah dioptimasi)*
 - **Pre-step**: `update_init_smartoffice_no_sk()` — set blank no_sk ke "Init SmartOffice"
 - **Fetch**: `emp_sk` INNER JOIN `employee`, `emp_profile`
 - **Target**: `riwayat_sk` via `save_riwayat_sk_from_emp_sk()` — **Simple INSERT** (no ON DUPLICATE)
 - **Transform** (`cleanup`): update_master→eq(1), is_deleted→eq(1)
 
-### v2_10: emp_work_history → riwayat_mutasi
+### v2_10: emp_work_history → riwayat_mutasi *(issue dibuat, belum diimplementasi)*
 - **Complex multi-merge cleanup**: merge riwayat_sk→riwayat_sk_id, merge golongan, merge profesi (current+old)
 - **JENIS_MUTASI_MAP**: {1→0, 2→1, 3→4, 4→6}
 - **Filter**: hanya rows dengan riwayat_sk_id > 0
 - **Target**: `riwayat_mutasi` — ON DUPLICATE KEY UPDATE pegawai_id only
 
-### v2_11: emp_contract → riwayat_kontrak
+### v2_11: emp_contract → riwayat_kontrak *(issue dibuat, belum diimplementasi)*
 - **Special logic**: pegawai_id lookup dengan preference status_kerja==2, sentinel "0000-00-00"→"1945-08-17", is_latest dari max(tanggal_sk) per nik, jenis_kontrak conditional (nipam prefix, status_kerja)
 
 ### v2_12: upd_emp_sk (update SK pegawai)

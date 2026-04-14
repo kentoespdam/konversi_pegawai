@@ -8,7 +8,7 @@
 
 ## Project
 - [Branching Strategy](project_branching.md) — BUG-FIX-OPTIMIZE-V2 → v2 → main workflow
-- [Active Work Items](project_active_work.md) — v2_1-v2_7 optimized, v2_8 issue created (pending impl), v2_9+ belum diaudit
+- [Active Work Items](project_active_work.md) — v2_1-v2_9_2 optimized, v2_10-v2_11 issues created (pending impl), v2_12+ belum diaudit
 - [Architecture & ETL Pattern](project_architecture.md) — 3-layer ETL, core modules, enums, helpers, conventions
 - [Migration Scripts Index](project_migration_index.md) — All v2_1-v2_17: source/target/columns/cleanup/status
 - [Bug & Optimization Patterns](project_bug_patterns.md) — 12 recurring bugs + standard fix patterns + audit checklist
