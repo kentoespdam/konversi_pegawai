@@ -1,7 +1,9 @@
 import time
-
+import traceback
+import numpy as np
 import pandas as pd
 
+from core.config import LOGGER
 from core.kepegawaian.kepeg_golongan import fetch_all_golongan
 from core.kepegawaian.kepeg_profesi import fetch_profesi
 from core.kepegawaian.kepeg_riwayat_mutasi import save_riwayat_mutasi_from_emp_work_history
@@ -21,37 +23,56 @@ JENIS_MUTASI_MAP: dict[int, int] = {
 
 
 def main():
-    start_time = time.time()
+    try:
+        start_time = time.time()
 
-    work_history_df = fetch_emp_work_history_for_riwayat_mutasi()
-    work_history_df = cleanup(work_history_df)
-    work_history_df = work_history_df[work_history_df["riwayat_sk_id"] > 0].reset_index(drop=True)
-    log_duration("generating data finish in ", start_time)
+        work_history_df = fetch_emp_work_history_for_riwayat_mutasi()
+        if work_history_df.empty:
+            LOGGER.info("No data found in emp_work_history. Skipping.")
+            return
 
-    start_time = time.time()
-    save_riwayat_mutasi_from_emp_work_history(work_history_df)
-    log_duration("posting data finish in ", start_time)
+        LOGGER.info(f"Fetched {len(work_history_df)} records.")
+
+        work_history_df = cleanup(work_history_df)
+
+        # Log how many records will be skipped
+        records_before_filter = len(work_history_df)
+        work_history_df = work_history_df[work_history_df["riwayat_sk_id"] > 0].reset_index(drop=True)
+        records_after_filter = len(work_history_df)
+        skipped_records = records_before_filter - records_after_filter
+
+        if skipped_records > 0:
+            LOGGER.warning(f"Skipping {skipped_records} records without riwayat_sk_id mapping.")
+
+        if work_history_df.empty:
+            LOGGER.info("All records filtered out (no valid riwayat_sk_id). Skipping.")
+            return
+
+        log_duration("generating data finish in ", start_time)
+
+        start_time = time.time()
+        save_riwayat_mutasi_from_emp_work_history(work_history_df)
+        LOGGER.info(f"Successfully processed {len(work_history_df)} records.")
+        log_duration("posting data finish in ", start_time)
+
+    except Exception as e:
+        LOGGER.error(f"Migration failed: {e}")
+        LOGGER.error(traceback.format_exc())
 
 
 def cleanup(df: pd.DataFrame) -> pd.DataFrame:
     """
     Transform and enrich raw emp_work_history data to the format expected by riwayat_mutasi.
-
-    Steps:
-    - Resolve riwayat_sk_id via merge on (pegawai_id, nomor_sk)
-    - Map golongan_id and nama_golongan via merges
-    - Map profesi (current and old) from jabatan via merges
-    - Normalize date strings
-    - Normalize jenis_mutasi and is_deleted
-    - Ensure required integer dtypes
     """
     # Prepare SK data
     sk_df = pd.DataFrame(fetch_all_riwayat_sk())
     if not sk_df.empty:
+        # Bug Fix: Deduplicate SK to prevent record explosion in merge
+        # Sort by id descending to pick the latest SK entry if duplicates exist
+        sk_df = sk_df.sort_values("id", ascending=False).drop_duplicates(["pegawai_id", "nomor_sk"]).reset_index(drop=True)
         sk_df["golongan_id"] = sk_df["golongan_id"].apply(lambda x: 0 if pd.isna(x) else x).astype(int)
 
     # Merge to get riwayat_sk_id based on (pegawai_id, nomor_sk)
-    # Keep only the 'id' from SK as 'riwayat_sk_id'
     df = df.merge(
         sk_df[["id", "pegawai_id", "nomor_sk"]],
         how="left",
@@ -81,12 +102,17 @@ def cleanup(df: pd.DataFrame) -> pd.DataFrame:
         )
     else:
         df["nama_golongan"] = None
-    # cleanup nan nama_golongan
-    df["nama_golongan"] = df["nama_golongan"].where(df["nama_golongan"].notna(), None)
+
+    # Bug Fix: Initialize golongan_lama columns (not currently available in source query/mapping)
+    df["golongan_lama_id"] = 0
+    df["nama_golongan_lama"] = None
 
     # Map profesi (current) from jabatan_id
     profesi_df = pd.DataFrame(fetch_profesi())
     if not profesi_df.empty:
+        # Bug Fix: Deduplicate profesi by jabatan_id to prevent record explosion
+        profesi_df = profesi_df.sort_values("id", ascending=False).drop_duplicates("jabatan_id").reset_index(drop=True)
+        
         current_prof = profesi_df[["jabatan_id", "id", "nama"]].rename(
             columns={"id": "profesi_id", "nama": "nama_profesi"}
         )
@@ -98,11 +124,8 @@ def cleanup(df: pd.DataFrame) -> pd.DataFrame:
         )
         df = df.merge(old_prof, how="left", on="jabatan_lama_id")
 
-        # Fill defaults to match prior behavior: id -> 0, name -> None
         df["profesi_id"] = df["profesi_id"].fillna(0).astype(int)
         df["profesi_lama_id"] = df["profesi_lama_id"].fillna(0).astype(int)
-        df["nama_profesi"] = df["nama_profesi"].where(df["nama_profesi"].notna(), None)
-        df["nama_profesi_lama"] = df["nama_profesi_lama"].where(df["nama_profesi_lama"].notna(), None)
     else:
         df["profesi_id"] = 0
         df["profesi_lama_id"] = 0
@@ -113,7 +136,7 @@ def cleanup(df: pd.DataFrame) -> pd.DataFrame:
     df["tmt_berlaku"] = format_date_series(df["tmt_berlaku"])
     df["tanggal_berakhir"] = format_date_series(df["tanggal_berakhir"])
 
-    # Normalize jenis_mutasi (Init Smartoffice -> 0, else mapping with default 0)
+    # Normalize jenis_mutasi
     init_mask = df["nomor_sk"] == "Init Smartoffice"
     mapped = df["jenis_mutasi"].map(JENIS_MUTASI_MAP).fillna(0).astype(int)
     df["jenis_mutasi"] = mapped.where(~init_mask, 0)
@@ -128,6 +151,9 @@ def cleanup(df: pd.DataFrame) -> pd.DataFrame:
         "organisasi_lama_id": int,
         "jabatan_lama_id": int,
     })
+
+    # Final Sanitization: Replace NaN/NaT/pd.NA with None for SQL compatibility
+    df = df.replace({np.nan: None, pd.NaT: None, pd.NA: None})
 
     return df
 
