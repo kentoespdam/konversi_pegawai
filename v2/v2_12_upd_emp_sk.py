@@ -1,8 +1,10 @@
 import time
+import traceback
 from typing import Dict, List
 
 import pandas as pd
 
+from core.config import LOGGER
 from core.enums import EJenisSk
 from core.kepegawaian.kepeg_pegawai import update_sk_pegawai
 from core.kepegawaian.kepeg_sk import fetch_latest_sk_by_pegawai
@@ -20,19 +22,43 @@ TARGET_JENIS_SK: List[EJenisSk] = [
 
 def main() -> None:
     """Fetch latest SK per pegawai, normalize, split by jenis, and update per jenis."""
-    df = fetch_latest_sk_by_pegawai()
-    if df.empty:
-        return
-    df = df.copy()
-    df["kenaikan_berikutnya"] = format_datetime_series(df["kenaikan_berikutnya"])
-    df["tmt_berlaku"] = format_datetime_series(df["tmt_berlaku"])
-    sk_by_jenis = split_by_jenis(df, TARGET_JENIS_SK)
+    try:
+        start_time = time.time()
+        df = fetch_latest_sk_by_pegawai()
+        if df.empty:
+            LOGGER.info("No data found to process. Skipping.")
+            return
 
-    for jenis_sk, df in sk_by_jenis.items():
-        if not df.empty:
-            start = time.time()
-            update_sk_pegawai(df, jenis_sk)
-            log_duration(f"update {jenis_sk.name} in", start)
+        LOGGER.info(f"Fetched {len(df)} latest SK records from riwayat_sk.")
+
+        df = df.copy()
+        df["tmt_berlaku"] = format_datetime_series(df["tmt_berlaku"])
+
+        sk_by_jenis = split_by_jenis(df, TARGET_JENIS_SK)
+
+        for jenis_sk, df_jenis in sk_by_jenis.items():
+            if df_jenis.empty:
+                continue
+
+            # Validation: tmt_berlaku is required for everything except SK_CAPEG
+            if jenis_sk != EJenisSk.SK_CAPEG:
+                valid_mask = df_jenis["tmt_berlaku"].notnull()
+                invalid_count = len(df_jenis) - valid_mask.sum()
+                if invalid_count > 0:
+                    LOGGER.warning(f"Skipping {invalid_count} records for {jenis_sk.name} due to missing tmt_berlaku.")
+                    df_jenis = df_jenis[valid_mask].copy()
+
+            if not df_jenis.empty:
+                start_op = time.time()
+                LOGGER.info(f"Updating {len(df_jenis)} records for {jenis_sk.name}...")
+                update_sk_pegawai(df_jenis, jenis_sk)
+                log_duration(f"update {jenis_sk.name} in", start_op)
+
+        log_duration("Total v2_12 processing time:", start_time)
+
+    except Exception as e:
+        LOGGER.error(f"Migration v2_12 failed: {e}")
+        LOGGER.error(traceback.format_exc())
 
 
 def split_by_jenis(df: pd.DataFrame, jenis_list: List[EJenisSk]) -> Dict[EJenisSk, pd.DataFrame]:

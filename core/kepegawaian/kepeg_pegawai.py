@@ -110,9 +110,9 @@ def save_pegawai_from_employee(df: pd.DataFrame):
 
 def update_sk_pegawai(df: pd.DataFrame, jenis_sk: EJenisSk):
     data = [(
-                row.id,
-                row.pegawai_id
-            ) if jenis_sk == EJenisSk.SK_CAPEG else (row.id, row.tmt_berlaku, row.pegawai_id) for row in
+        row.id,
+        row.pegawai_id
+    ) if jenis_sk == EJenisSk.SK_CAPEG else (row.id, row.tmt_berlaku, row.pegawai_id) for row in
             df.itertuples(index=False)]
 
     query = _generate_query_sk_capeg(jenis_sk)
