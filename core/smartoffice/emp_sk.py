@@ -1,7 +1,11 @@
 import pandas as pd
-from icecream import ic
 
-from core.config import get_smartoffice_connection_pool, save_update_smartoffice, fetch_smartoffice, LOGGER
+from core.config import (
+    LOGGER,
+    fetch_smartoffice,
+    get_smartoffice_connection_pool,
+    save_update_smartoffice,
+)
 
 
 def fetch_emp_sk_for_riwayat_sk():
@@ -70,9 +74,9 @@ def save_emp_sk_from_emp_work_history(df: pd.DataFrame):
 
     query = """
             INSERT INTO emp_sk (emp_id, jenis_sk, ref_id, no_sk, tgl_sk,
-                                tmt_sk, status, keterangan)
+                                tmt_sk, status, keterangan, created_by, created_at)
             VALUES (%s, %s, %s, %s, %s,
-                    %s, %s, %s)
+                    %s, %s, %s, 0, CURRENT_TIMESTAMP)
             ON DUPLICATE KEY UPDATE emp_id=VALUES(emp_id),
                                     jenis_sk=VALUES(jenis_sk),
                                     ref_id=VALUES(ref_id),
@@ -80,7 +84,7 @@ def save_emp_sk_from_emp_work_history(df: pd.DataFrame):
                                     tgl_sk=VALUES(tgl_sk),
                                     tmt_sk=VALUES(tmt_sk),
                                     status=VALUES(status),
-                                    keterangan=VALUES(keterangan) \
+                                    keterangan=VALUES(keterangan)
             """
     save_update_smartoffice(query, data)
 
