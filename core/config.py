@@ -166,7 +166,10 @@ def _do_save_update(connection: pymysqlpool.Connection, query: str, data: list):
     with connection.cursor() as cursor:
         try:
             cursor.execute("SET FOREIGN_KEY_CHECKS=0")
-            cursor.executemany(query, data)
+            if data is not None:
+                cursor.executemany(query, data)
+            else:
+                cursor.execute(query)
             affected = cursor.rowcount
             LOGGER.info(f"{affected} row(s) affected")
             connection.commit()
