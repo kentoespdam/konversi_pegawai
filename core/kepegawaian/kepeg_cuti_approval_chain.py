@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 from core.config import save_update_kepegawaian
 
@@ -41,15 +42,24 @@ def save_approval_chain(df: pd.DataFrame):
 
 
 def update_approval_chain(df: pd.DataFrame):
+    if df.empty:
+        return
+
+    # Sanitasi NaN menjadi None
+    df = df.replace({np.nan: None, pd.NA: None})
+
     data_list = [(
-        row.approval_status,
+        max(0, row.approval_status),
         row.cuti_pegawai_id,
-        row.jabatan_id
+        row.jabatan_id,
+        row.approval_level
     ) for row in df.itertuples(index=False)]
+
     query = """
             UPDATE cuti_approval_chain
             SET approval_status=%s
             WHERE ref_cuti_id = %s
               AND jabatan_id = %s
+              AND approval_level = %s
             """
     save_update_kepegawaian(query, data_list)
