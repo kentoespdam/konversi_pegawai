@@ -1,7 +1,9 @@
 import time
-
+import traceback
+import numpy as np
 import pandas as pd
 
+from core.config import LOGGER
 from core.kepegawaian.kepeg_cuti_pegawai import save_cuti_pegawai
 from core.smartoffice.eo_cuti_pegawai import fetch_cuti_pegawai
 from v2.v2_helper import format_datetime_series, format_date_series, log_duration
@@ -12,11 +14,25 @@ APPROVAL_APPROVED = 1
 
 
 def main() -> None:
-    start = time.time()
-    cp_df = fetch_cuti_pegawai()
-    cp_df = transform_cuti_dataframe(cp_df)
-    save_cuti_pegawai(cp_df)
-    log_duration("Posting cuti_pegawai finished", start)
+    try:
+        start = time.time()
+        df = fetch_cuti_pegawai()
+        if df.empty:
+            LOGGER.info("No cuti_pegawai data found. Skipping.")
+            return
+
+        LOGGER.info(f"Fetched {len(df)} cuti_pegawai records.")
+        df = transform_cuti_dataframe(df)
+
+        log_duration("transforming cuti_pegawai finished", start)
+
+        start = time.time()
+        save_cuti_pegawai(df)
+        LOGGER.info(f"Successfully processed {len(df)} cuti_pegawai records.")
+        log_duration("Posting cuti_pegawai finished", start)
+    except Exception as e:
+        LOGGER.error(f"Error in cuti_pegawai migration: {e}")
+        traceback.print_exc()
 
 
 # ... existing code ...
@@ -48,6 +64,9 @@ def _cleanup_claim(df: pd.DataFrame):
 
     # Vectorized computation of is_claimed (avoid per-row apply/swifter)
     df["is_claimed"] = (df["jenis_pengajuan_cuti"] != CUTI_PENGAJUAN_CLAIM) & (df["id"].isin(approved_claim_ref_ids))
+
+    # Sanitize NaN/NaT values for MySQL
+    df = df.replace({np.nan: None, pd.NaT: None, pd.NA: None})
     return df
 
 
