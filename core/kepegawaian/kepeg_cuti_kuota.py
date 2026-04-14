@@ -28,7 +28,8 @@ def save_cuti_kuota(df: pd.DataFrame):
                                     kuota_tambahan=VALUES(kuota_tambahan),
                                     sisa_kuota=VALUES(sisa_kuota),
                                     expired=VALUES(expired),
-                                    is_deleted=VALUES(is_deleted)
+                                    is_deleted=VALUES(is_deleted),
+                                    updated_at=CURRENT_TIMESTAMP
             """
 
     save_update_kepegawaian(query, data_list)
