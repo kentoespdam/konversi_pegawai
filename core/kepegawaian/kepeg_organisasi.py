@@ -12,21 +12,27 @@ def fetch_organisasi():
             cursor.execute(query)
             return cursor.fetchall()
 
+
+def update_organisasi_from_organization(df: pd.DataFrame):
+    if df.empty:
+        return
+
     data = [(
+        row.org_id,
         row.org_name,
         row.mail_code,
         row.category,
-        row.is_deleted,
-        row.org_id
+        row.is_deleted
     ) for row in df.itertuples(index=False)]
 
     query = """
-            UPDATE organisasi
-            SET nama=%s,
-                short_name=%s,
-                category=%s,
-                is_deleted=%s
-            WHERE id = %s \
+            INSERT INTO organisasi (id, nama, short_name, category, is_deleted)
+            VALUES (%s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+                nama=VALUES(nama),
+                short_name=VALUES(short_name),
+                category=VALUES(category),
+                is_deleted=VALUES(is_deleted)
             """
 
     save_update_kepegawaian(query, data)

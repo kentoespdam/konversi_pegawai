@@ -62,48 +62,48 @@ SmartOffice DB          Transform (v2/)          Kepegawaian DB
 
 ### Core Modules
 
-| Module | Fungsi |
-|--------|--------|
-| `core/config.py` | Connection pool & fungsi `fetch_smartoffice`, `fetch_kepegawaian`, `save_update_kepegawaian` |
-| `core/enums.py` | Mapping enum antara kode source & target (status pegawai, jenis SK, dll) |
-| `core/post_data.py` | HTTP POST utility untuk push data ke API eksternal |
-| `core/smartoffice/` | Query SELECT dari database SmartOffice (source) |
-| `core/kepegawaian/` | Query INSERT/UPDATE ke database Kepegawaian (target) |
-| `v2/v2_helper.py` | Utility transformasi: format tanggal, durasi log, konversi tipe |
+| Module              | Fungsi                                                                                       |
+|---------------------|----------------------------------------------------------------------------------------------|
+| `core/config.py`    | Connection pool & fungsi `fetch_smartoffice`, `fetch_kepegawaian`, `save_update_kepegawaian` |
+| `core/enums.py`     | Mapping enum antara kode source & target (status pegawai, jenis SK, dll)                     |
+| `core/post_data.py` | HTTP POST utility untuk push data ke API eksternal                                           |
+| `core/smartoffice/` | Query SELECT dari database SmartOffice (source)                                              |
+| `core/kepegawaian/` | Query INSERT/UPDATE ke database Kepegawaian (target)                                         |
+| `v2/v2_helper.py`   | Utility transformasi: format tanggal, durasi log, konversi tipe                              |
 
 ## Script Migrasi
 
 Script dijalankan secara berurutan dari `v2_1` sampai `v2_17`:
 
-| Script | Source | Target | Keterangan |
-|--------|--------|--------|------------|
-| v2_1 | `emp_profile` | `biodata` + `kartu_identitas` | Profil pegawai & kartu identitas |
-| v2_2 | `employee` | `pegawai` | Data utama pegawai |
-| v2_3 | `emp_card` | `kartu_identitas` | Kartu identitas (KTP, SIM, dll) |
-| v2_4 | `emp_skill` | `keahlian` | Keahlian pegawai |
-| v2_5 | `emp_training` | `pelatihan` | Riwayat pelatihan |
-| v2_6 | `emp_education` | `pendidikan` | Riwayat pendidikan |
-| v2_7 | `emp_work_experience` | `pengalaman_kerja` | Pengalaman kerja sebelumnya |
-| v2_8 | `emp_family` | `profil_keluarga` | Data keluarga |
-| v2_9_1 | `riwayat_sk` | `emp_sk` | Inisialisasi SK dari riwayat (opsional) |
-| v2_9_2 | `emp_sk` | `riwayat_sk` | Riwayat Surat Keputusan |
-| v2_10 | `emp_work_history` | `riwayat_mutasi` | Riwayat mutasi |
-| v2_11 | `emp_contract` | `riwayat_kontrak` | Riwayat kontrak |
-| v2_12 | - | `emp_sk` (update) | Update referensi SK per jenis |
-| v2_13 | `eo_cuti_kuota` | `cuti_kuota` | Kuota cuti |
-| v2_14 | `eo_cuti_pegawai` | `cuti_pegawai` | Pengajuan cuti |
-| v2_15 | `eo_cuti_approval_chain` | `cuti_approval_chain` | Rantai approval cuti |
-| v2_16 | `eo_cuti_approval` | `cuti_approval` | Approval cuti |
-| v2_17 | `eo_cuti_pegawai_detail` | `cuti_klaim_detail` | Detail klaim cuti |
+| Script | Source                   | Target                        | Keterangan                              |
+|--------|--------------------------|-------------------------------|-----------------------------------------|
+| v2_1   | `emp_profile`            | `biodata` + `kartu_identitas` | Profil pegawai & kartu identitas        |
+| v2_2   | `employee`               | `pegawai`                     | Data utama pegawai                      |
+| v2_3   | `emp_card`               | `kartu_identitas`             | Kartu identitas (KTP, SIM, dll)         |
+| v2_4   | `emp_skill`              | `keahlian`                    | Keahlian pegawai                        |
+| v2_5   | `emp_training`           | `pelatihan`                   | Riwayat pelatihan                       |
+| v2_6   | `emp_education`          | `pendidikan`                  | Riwayat pendidikan                      |
+| v2_7   | `emp_work_experience`    | `pengalaman_kerja`            | Pengalaman kerja sebelumnya             |
+| v2_8   | `emp_family`             | `profil_keluarga`             | Data keluarga                           |
+| v2_9_1 | `riwayat_sk`             | `emp_sk`                      | Inisialisasi SK dari riwayat (opsional) |
+| v2_9_2 | `emp_sk`                 | `riwayat_sk`                  | Riwayat Surat Keputusan                 |
+| v2_10  | `emp_work_history`       | `riwayat_mutasi`              | Riwayat mutasi                          |
+| v2_11  | `emp_contract`           | `riwayat_kontrak`             | Riwayat kontrak                         |
+| v2_12  | -                        | `emp_sk` (update)             | Update referensi SK per jenis           |
+| v2_13  | `eo_cuti_kuota`          | `cuti_kuota`                  | Kuota cuti                              |
+| v2_14  | `eo_cuti_pegawai`        | `cuti_pegawai`                | Pengajuan cuti                          |
+| v2_15  | `eo_cuti_approval_chain` | `cuti_approval_chain`         | Rantai approval cuti                    |
+| v2_16  | `eo_cuti_approval`       | `cuti_approval`               | Approval cuti                           |
+| v2_17  | `eo_cuti_pegawai_detail` | `cuti_klaim_detail`           | Detail klaim cuti                       |
 
 ### Script Pendukung
 
-| Script | Keterangan |
-|--------|------------|
-| `v2_master_gaji.py` | Migrasi master data gaji (tunjangan, PTKP, parameter, potongan TKK) |
-| `v2_master_organisasi.py` | Sinkronisasi data organisasi |
-| `set_nik_pegawai.py` | Pembersihan NIK pegawai yang belum terisi |
-| `update_phdp_pegawai.py` | Update PHDP dan ID perumahan pada data pegawai |
+| Script                    | Keterangan                                                          |
+|---------------------------|---------------------------------------------------------------------|
+| `v2_master_gaji.py`       | Migrasi master data gaji (tunjangan, PTKP, parameter, potongan TKK) |
+| `v2_master_organisasi.py` | Sinkronisasi data organisasi                                        |
+| `set_nik_pegawai.py`      | Pembersihan NIK pegawai yang belum terisi                           |
+| `update_phdp_pegawai.py`  | Update PHDP dan ID perumahan pada data pegawai                      |
 
 ## Penggunaan
 

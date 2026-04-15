@@ -1,5 +1,6 @@
 import time
 import pandas as pd
+import numpy as np
 from core.config import LOGGER
 from core.kepegawaian.kepeg_biodata import save_biodata_from_emp_profile
 from core.kepegawaian.kepeg_jenjang_pendidikan import fetch_jenjang_pendidikan
@@ -51,6 +52,8 @@ def transform_biodata(df: pd.DataFrame) -> pd.DataFrame:
     # Booleans & NULL handling (Bug 3 & 6)
     df["is_deleted"] = df["is_deleted"].fillna(0).astype(int)
     df["is_pegawai"] = df["emp_flag"].fillna(0).ne(0).astype(int)
+
+    df = df.replace({np.nan: None, pd.NaT: None, pd.NA: None})
 
     return df
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/fcdc0752-d919-46cf-a92a-de2b1826efbc/console.sql" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
     <file url="file://$PROJECT_DIR$/core/kepegawaian/jenis_kartu.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
     <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_biodata.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
     <file url="file://$PROJECT_DIR$/core/kepegawaian/kepeg_cuti_approval.py" value="fcdc0752-d919-46cf-a92a-de2b1826efbc" />
