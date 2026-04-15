@@ -2,6 +2,7 @@ import logging
 import time
 
 import pandas as pd
+import numpy as np
 
 from core.kepegawaian.jenis_kartu import fetch_all_jenis_kartu
 from core.kepegawaian.kepeg_kartu_identitas import save_kartu_identitas_from_emp_card
@@ -45,6 +46,7 @@ def cleanup(df: pd.DataFrame):
     # Bug Fix: Ensure is_deleted is integer for DB compatibility
     df["is_deleted"] = df["is_deleted"].astype(int)
 
+    df = df.replace({np.nan: None, pd.NaT: None, pd.NA: None})
     return df
 
 
