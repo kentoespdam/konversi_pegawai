@@ -1,6 +1,5 @@
-from core.config import get_smartoffice_connection_pool
+from core.config import get_smartoffice_connection_pool, LOGGER
 import pandas as pd
-import dask.dataframe as dd
 import numpy as np
 
 # Constants
@@ -36,27 +35,31 @@ def fetch_salary_allowance() -> pd.DataFrame:
 # ... existing code ...
 
 def cleanup_salary_allowance(df: pd.DataFrame) -> pd.DataFrame:
-    ddf = dd.from_pandas(df, npartitions=4)
-    ddf = ddf.map_partitions(
-        _transform_partition,
-        meta={
-            "id": int,
-            "jenis_tunjangan": int,  # fixed type: this column becomes int after mapping
-            "level_id": int,
-            "golongan_id": int,
-            "nominal": int,
-        },
-    )
-    df = ddf.compute()
+    """
+    Cleanup and transform salary allowance data.
+    """
+    if df.empty:
+        LOGGER.info("No salary allowance data to cleanup.")
+        return df
 
-    # Sanitization
-    df = df.replace({np.nan: None, pd.NaT: None, pd.NA: None})
-    return df
+    try:
+        count_before = len(df)
+        df = _transform_salary_allowance(df)
+
+        # Sanitization
+        df = df.replace({np.nan: None, pd.NaT: None, pd.NA: None})
+
+        count_after = len(df)
+        LOGGER.info(f"Successfully cleaned up {count_after} salary allowances (from {count_before} records).")
+        return df
+    except Exception as e:
+        LOGGER.error(f"Error during salary allowance cleanup: {str(e)}")
+        raise
 
 
 # ... existing code ...
 
-def _transform_partition(df: pd.DataFrame) -> pd.DataFrame:
+def _transform_salary_allowance(df: pd.DataFrame) -> pd.DataFrame:
     """
     Transform partition:
     - Map jenis_tunjangan string codes to enum ints.
