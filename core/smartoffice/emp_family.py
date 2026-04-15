@@ -16,11 +16,13 @@ def fetch_emp_family_for_profil_keluarga():
                    ef.fam_sts_nikah - 1                                 AS status_kawin,
                    ef.fam_description                                   AS notes,
                    TIMESTAMPDIFF(YEAR, ef.fam_birth_date, CURRENT_DATE) AS umur,
-                   IF(ef.fam_status = 3, TRUE, FALSE)                   AS is_deleted
+                   IF(ef.fam_status = 3, TRUE, FALSE)                   AS is_deleted,
+                   NULL                                                 AS nik
             FROM emp_family AS ef
                      INNER JOIN emp_profile AS ep ON ef.emp_profile_id = ep.emp_profile_id
                      LEFT JOIN sys_reference AS rh ON ef.fam_relation = rh.`value`
-                AND rh.`code` = %s \
+                AND rh.`code` = %s
+            WHERE ep.emp_identity_number IS NOT NULL
             """
     params = ("hub_keluarga",)
     return fetch_smartoffice(query, params)

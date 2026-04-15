@@ -20,7 +20,6 @@ def save_pelatihan_from_emp_training(df: pd.DataFrame):
         row.tanggal_pengajuan,
         row.tanggal_disetujui,
         row.is_deleted,
-        0,
         'SYSTEM'
     ) for row in df.itertuples(index=False)]
 
@@ -28,12 +27,27 @@ def save_pelatihan_from_emp_training(df: pd.DataFrame):
             INSERT INTO pelatihan (biodata_id, jenis_pelatihan_id, nama, lembaga, tanggal_mulai,
                                    tanggal_selesai, lulus, nilai, ikatan_dinas, tanggal_akhir_ikatan,
                                    notes, disetujui, tanggal_pengajuan, tanggal_disetujui, is_deleted,
-                                   version, created_by)
+                                   created_by)
             VALUES (%s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
-                    %s, %s)
-            ON DUPLICATE KEY UPDATE biodata_id=VALUES(biodata_id)
+                    %s)
+            ON DUPLICATE KEY UPDATE 
+                jenis_pelatihan_id=VALUES(jenis_pelatihan_id),
+                nama=VALUES(nama),
+                lembaga=VALUES(lembaga),
+                tanggal_mulai=VALUES(tanggal_mulai),
+                tanggal_selesai=VALUES(tanggal_selesai),
+                lulus=VALUES(lulus),
+                nilai=VALUES(nilai),
+                ikatan_dinas=VALUES(ikatan_dinas),
+                tanggal_akhir_ikatan=VALUES(tanggal_akhir_ikatan),
+                notes=VALUES(notes),
+                disetujui=VALUES(disetujui),
+                tanggal_pengajuan=VALUES(tanggal_pengajuan),
+                tanggal_disetujui=VALUES(tanggal_disetujui),
+                is_deleted=VALUES(is_deleted),
+                updated_at=CURRENT_TIMESTAMP
             """
 
     save_update_kepegawaian(query, data)

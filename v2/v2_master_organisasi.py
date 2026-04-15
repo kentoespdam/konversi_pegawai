@@ -20,8 +20,12 @@ def main():
 
 
 def _cleanup(df: pd.DataFrame):
+    if df.empty:
+        return df
     df = df.copy()
-    df["is_deleted"] = df["org_status"].ne("Enabled")
+    df["is_deleted"] = df["org_status"].ne("Enabled").astype(int)
+    import numpy as np
+    df = df.replace({np.nan: None, pd.NaT: None, pd.NA: None})
     return df[["org_id", "org_name", "mail_code", "category", "is_deleted"]]
 
 

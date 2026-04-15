@@ -35,8 +35,7 @@ def save_cuti_pegawai(df: pd.DataFrame):
         row.is_claimed,
         False,
         row.created_at,
-        "DEV",
-        0
+        "SYSTEM"
     ) for row in df.itertuples(index=False)]
     sql = """
           INSERT INTO cuti_pegawai (id, pegawai_id, nipam, nama, pangkat_golongan,
@@ -45,14 +44,14 @@ def save_cuti_pegawai(df: pd.DataFrame):
                                     kuota_awal, kuota_akhir, alasan, approval_cuti_status, approval_level,
                                     pic_saat_ini_id, riwayat_kuota0, riwayat_kuota1, riwayat_pakai0, riwayat_pakai1,
                                     riwayat_sisa0, riwayat_sisa1, is_claimed, is_deleted, created_at,
-                                    created_by, version)
+                                    created_by)
           VALUES (%s, %s, %s, %s, %s,
                   %s, %s, %s, %s, %s,
                   %s, %s, %s, %s, %s,
                   %s, %s, %s, %s, %s,
                   %s, %s, %s, %s, %s,
                   %s, %s, %s, %s, %s,
-                  %s, %s)
+                  %s)
           ON DUPLICATE KEY UPDATE pegawai_id=VALUES(pegawai_id),
                                   nipam=VALUES(nipam),
                                   nama=VALUES(nama),
@@ -83,7 +82,7 @@ def save_cuti_pegawai(df: pd.DataFrame):
                                   is_deleted=VALUES(is_deleted),
                                   created_at=VALUES(created_at),
                                   created_by=VALUES(created_by),
-                                  version=VALUES(version)
+                                  updated_at=CURRENT_TIMESTAMP
           """
 
     save_update_kepegawaian(sql, data_list)

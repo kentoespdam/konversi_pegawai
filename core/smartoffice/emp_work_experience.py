@@ -15,9 +15,10 @@ def fetch_emp_work_experience_for_pengalaman_kerja():
                    ew.ewe_job_description             AS notes,
                    IF(ew.ewe_status = 3, TRUE, FALSE) AS is_deleted,
                    ew.ewe_entry_date                  AS tanggal_pengajuan,
-                   ew.approve_date                    AS tanggal_disetujui
+                   ew.approve_date                    AS tanggal_disetujui,
+                   ew.approve_by                      AS disetujui_oleh
             FROM emp_work_experience AS ew
-                     INNER JOIN bidang_perusahaan AS bp ON ew.ewe_company_type = bp.id
+                     LEFT JOIN bidang_perusahaan AS bp ON ew.ewe_company_type = bp.id
                      INNER JOIN emp_profile AS ep ON ew.emp_profile_id = ep.emp_profile_id \
             """
     return fetch_smartoffice(query)

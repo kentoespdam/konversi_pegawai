@@ -12,8 +12,8 @@ def fetch_cuti_approval():
                    cpa.cpa_note                  AS notes,
                    cpa.cpa_date                  AS created_at
             FROM cuti_pegawai_approval AS cpa
-                     INNER JOIN employee AS em ON cpa.cpa_emp_code = em.emp_code
-                     INNER JOIN cuti_pegawai AS cp ON cpa.cp_id = cp.cp_id
+                     LEFT JOIN employee AS em ON cpa.cpa_emp_code = em.emp_code
+                     LEFT JOIN cuti_pegawai AS cp ON cpa.cp_id = cp.cp_id
             """
 
     return fetch_smartoffice(query)

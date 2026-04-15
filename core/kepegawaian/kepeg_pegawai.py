@@ -11,7 +11,8 @@ def update_pegawai_phdp(df: pd.DataFrame):
             UPDATE pegawai
             SET gaji_profil_id = %s,
                 phdp           =COALESCE(%s, 0),
-                rumah_dinas_id =COALESCE(%s, NULL)
+                rumah_dinas_id =%s,
+                updated_at     = CURRENT_TIMESTAMP
             WHERE nipam = %s
             """
 
@@ -87,23 +88,33 @@ def save_pegawai_from_employee(df: pd.DataFrame):
         row.mkg_tahun,
         row.mkg_bulan,
         row.notes,
-        0,
         'SYSTEM'
     ) for row in df.itertuples(index=False)]
 
     query = """
-            REPLACE INTO pegawai (id, nipam, nik, status_pegawai, organisasi_id,
+            INSERT INTO pegawai (id, nipam, nik, status_pegawai, organisasi_id,
                                   jabatan_id, profesi_id, golongan_id, grade_id, status_kerja,
                                   tmt_mutasi, tmt_jabatan, tmt_golongan, tmt_kerja, tanggal_pengangkatan,
                                   tmt_pensiun, gaji_profil_id, gaji_pendapatan_non_pajak_id, rumah_dinas_id, gaji_pokok,
                                   is_askes, phdp, jml_tanggungan, mkg_tahun, mkg_bulan,
-                                  notes, version, created_by)
+                                  notes, created_by)
             VALUES (%s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
-                    %s, %s, %s) \
+                    %s, %s)
+            ON DUPLICATE KEY UPDATE
+                nipam=VALUES(nipam), nik=VALUES(nik), status_pegawai=VALUES(status_pegawai),
+                organisasi_id=VALUES(organisasi_id), jabatan_id=VALUES(jabatan_id),
+                profesi_id=VALUES(profesi_id), golongan_id=VALUES(golongan_id), grade_id=VALUES(grade_id),
+                status_kerja=VALUES(status_kerja), tmt_mutasi=VALUES(tmt_mutasi), tmt_jabatan=VALUES(tmt_jabatan),
+                tmt_golongan=VALUES(tmt_golongan), tmt_kerja=VALUES(tmt_kerja), tanggal_pengangkatan=VALUES(tanggal_pengangkatan),
+                tmt_pensiun=VALUES(tmt_pensiun), gaji_profil_id=VALUES(gaji_profil_id),
+                gaji_pendapatan_non_pajak_id=VALUES(gaji_pendapatan_non_pajak_id), rumah_dinas_id=VALUES(rumah_dinas_id),
+                gaji_pokok=VALUES(gaji_pokok), is_askes=VALUES(is_askes), phdp=VALUES(phdp),
+                jml_tanggungan=VALUES(jml_tanggungan), mkg_tahun=VALUES(mkg_tahun), mkg_bulan=VALUES(mkg_bulan),
+                notes=VALUES(notes), updated_at=CURRENT_TIMESTAMP
             """
 
     save_update_kepegawaian(query, data)
@@ -111,9 +122,9 @@ def save_pegawai_from_employee(df: pd.DataFrame):
 
 def update_sk_pegawai(df: pd.DataFrame, jenis_sk: EJenisSk):
     data = [(
-                row.id,
-                row.pegawai_id
-            ) if jenis_sk == EJenisSk.SK_CAPEG else (row.id, row.tmt_berlaku, row.pegawai_id) for row in
+        row.id,
+        row.pegawai_id
+    ) if jenis_sk == EJenisSk.SK_CAPEG else (row.id, row.tmt_berlaku, row.pegawai_id) for row in
             df.itertuples(index=False)]
 
     query = _generate_query_sk_capeg(jenis_sk)

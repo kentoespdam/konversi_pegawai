@@ -1,4 +1,4 @@
-from core.config import fetch_kepegawaian, fetch_smartoffice
+from core.config import fetch_smartoffice
 
 
 def fetch_cuti_kuota():
@@ -11,7 +11,7 @@ def fetch_cuti_kuota():
                    ck.ck_sisa    AS sisa_kuota,
                    ck.ck_expired AS expired
             FROM cuti_kuota AS ck
-                     INNER JOIN employee AS em ON ck.emp_code = em.emp_code \
+                     LEFT JOIN employee AS em ON ck.emp_code = em.emp_code \
             """
 
     return fetch_smartoffice(query)

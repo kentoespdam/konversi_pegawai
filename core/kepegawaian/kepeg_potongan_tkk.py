@@ -1,39 +1,44 @@
 from typing import Final
 
 import pandas as pd
-from icecream import ic
 
-from core.config import get_kepegawaian_connection_pool
+from core.config import LOGGER, get_kepegawaian_connection_pool
 from core.enums import EStatusPegawai
 
 DEFAULT_UNKNOWN_INT: Final[int] = -1
 
 
 def save_potongan_tkk(data: pd.DataFrame):
+    if data.empty:
+        return
+
     data_list = [(
         row.id,
         row.status_pegawai,
         row.golongan_id if row.golongan_id > 0 else None,
         row.level_id if row.level_id > 0 else None,
         row.nominal,
-        "SYSTEM",
-        0
-    ) for row in data.itertuples()]
+        "SYSTEM"
+    ) for row in data.itertuples(index=False)]
 
     query = """
-            INSERT INTO gaji_potongan_tkk(id, status_pegawai, golongan_id, level_id, nominal, created_by, version)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-            ON DUPLICATE KEY UPDATE nominal=VALUES(nominal) \
+            INSERT INTO gaji_potongan_tkk(id, status_pegawai, golongan_id, level_id, nominal, created_by)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE status_pegawai=VALUES(status_pegawai),
+                                    golongan_id=VALUES(golongan_id),
+                                    level_id=VALUES(level_id),
+                                    nominal=VALUES(nominal),
+                                    updated_at=CURRENT_TIMESTAMP
             """
 
     with get_kepegawaian_connection_pool() as conn:
         with conn.cursor() as cursor:
             try:
                 cursor.executemany(query, data_list)
-                ic(f"{cursor.rowcount} rows affected")
+                LOGGER.info(f"gaji_potongan_tkk: {cursor.rowcount} rows affected")
                 conn.commit()
             except Exception as e:
-                ic(e)
+                LOGGER.error(f"Error saving potongan_tkk: {e}")
                 conn.rollback()
 
 
@@ -44,11 +49,15 @@ def cleanup_potongan_tkk(df: pd.DataFrame) -> pd.DataFrame:
     - level_id normalized according to mapping
     - golongan_id filled with DEFAULT_UNKNOWN_INT when missing and cast to int
     """
+    import numpy as np
     df = df.copy()
     df["status_pegawai"] = df["status_pegawai"].apply(_cleanup_status_pegawai).astype(int)
-    df["level_id"]=df["level_id"].fillna(-1).astype(int)
+    df["level_id"] = df["level_id"].fillna(DEFAULT_UNKNOWN_INT).astype(int)
     df["level_id"] = df["level_id"].apply(lambda x: _cleanup_level_id(x)).astype(int)
     df["golongan_id"] = df["golongan_id"].fillna(DEFAULT_UNKNOWN_INT).astype(int)
+
+    # Sanitization
+    df = df.replace({np.nan: None, pd.NaT: None, pd.NA: None})
     return df
 
 
