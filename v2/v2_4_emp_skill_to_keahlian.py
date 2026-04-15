@@ -3,6 +3,7 @@ import time
 import sys
 
 import pandas as pd
+import numpy as np
 
 from core.kepegawaian.kepeg_keahlian import save_keahlian_from_emp_skill
 from core.smartoffice.emp_skill import fetch_emp_skill_for_keahlian
@@ -45,6 +46,8 @@ def cleanup(df: pd.DataFrame):
     
     # is_deleted logic: status_raw == 3 (based on original query logic)
     df["is_deleted"] = df["status_raw"].eq(3)
+
+    df = df.replace({np.nan: None, pd.NaT: None, pd.NA: None})
     
     return df
 
