@@ -1,6 +1,7 @@
 import time
 
 import pandas as pd
+import numpy as np
 
 from core.kepegawaian.kepeg_gaji_pendapatan_non_pajak import (
     fetch_all_gaji_pendapatan_non_pajak,
@@ -11,6 +12,7 @@ from core.kepegawaian.kepeg_organisasi import fetch_organisasi
 from core.kepegawaian.kepeg_pegawai import save_pegawai_from_employee, update_pegawai_phdp
 from core.kepegawaian.kepeg_profesi import fetch_profesi
 from core.smartoffice.eo_employee import fetch_employee_for_pegawai, fetch_gaji_employee
+from core.config import LOGGER
 from v2.v2_helper import format_date_series, log_duration
 
 DATE_COLUMNS = [
@@ -24,19 +26,30 @@ DATE_COLUMNS = [
 
 
 def main():
-    start_time = time.time()
-    employee = fetch_employee_for_pegawai()
-    employee = cleanup(employee)
-    log_duration("generating data finish in ", start_time)
+    try:
+        start_time = time.time()
+        employee = fetch_employee_for_pegawai()
+        if employee.empty:
+            LOGGER.info("No data found. Skipping.")
+            return
+        LOGGER.info(f"Fetched {len(employee)} records.")
+        employee = cleanup(employee)
+        log_duration("generating data finish in ", start_time)
 
-    start_time = time.time()
-    save_pegawai_from_employee(employee)
-    log_duration("posting data finish in ", start_time)
+        start_time = time.time()
+        save_pegawai_from_employee(employee)
+        LOGGER.info(f"Successfully processed {len(employee)} records.")
+        log_duration("posting data finish in ", start_time)
 
-    start_time = time.time()
-    salary_rows = fetch_gaji_employee()
-    update_pegawai_phdp(salary_rows)
-    log_duration("posting data finish in ", start_time)
+        start_time = time.time()
+        salary_rows = fetch_gaji_employee()
+        if not salary_rows.empty:
+            LOGGER.info(f"Fetched {len(salary_rows)} salary records.")
+            update_pegawai_phdp(salary_rows)
+            LOGGER.info(f"Successfully processed {len(salary_rows)} salary records.")
+        log_duration("posting data finish in ", start_time)
+    except Exception as e:
+        LOGGER.error(f"Migration failed: {e}", exc_info=True)
 
 
 def cleanup(df: pd.DataFrame):
@@ -61,6 +74,8 @@ def cleanup(df: pd.DataFrame):
 
     df["is_askes"] = df["is_askes"].eq('1')
     df["is_deleted"] = df["is_deleted"].eq(1)
+    
+    df = df.replace({np.nan: None, pd.NaT: None, pd.NA: None})
     return df
 
 
